@@ -1,4 +1,4 @@
-# minim
+# Mini Motors 
 Mini Motors is a racing game for the X16 retro computer.
 
 The original idea was to make a sort of clone of "Micro Machines", but the only real connection is in name and in spirit.

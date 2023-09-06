@@ -8,7 +8,7 @@
 #define VRAM_offset 0xA800
 #define CARS_size 5632
 #define BOOM_size 4096
-#define CDTXT_size 10240
+#define JUMP_size 20480
 #define TRTXT_size 4608
 
 int main(int argc, char *argv[]){
@@ -51,8 +51,40 @@ int main(int argc, char *argv[]){
 			std::cout << "Tiles Size Track" << (ti+1) << " Is : " << tSize << std::endl << std::endl;
 		}
 
+		//Jump Sprite	
+		
+		unsigned int mJumpAddr = VRAM_offset + tSize;
+		
+		unsigned char mJumpLo,mJumpHi;
+		
+		std::cout << "Jump Addr: " << mJumpAddr << std::endl;
+		
+		mJumpLo = (unsigned char)(mJumpAddr & 0x00ff);
+		mJumpHi = (unsigned char)((mJumpAddr >> 8) & 0x00ff);
+	
+		std::cout << "Jump Addr Hi: " << (int)(mJumpHi) << std::endl;
+		std::cout << "Jump Addr Lo: " << (int)(mJumpLo) << std::endl;		
+
+	
+		obuffer.push_back(mJumpHi);
+		obuffer.push_back(mJumpLo);		
+		
+		mJumpAddr = mJumpAddr >> 5;
+		
+		mJumpLo = (unsigned char)(mJumpAddr & 0x00ff);
+		mJumpHi = (unsigned char)((mJumpAddr >> 8) & 0x00ff);
+		
+		std::cout << "Jump Short Hi: " << (int)(mJumpHi) << std::endl;
+		std::cout << "Jump Short Lo: " << (int)(mJumpLo) << std::endl << std::endl;		
+
+	
+		obuffer.push_back(mJumpHi);
+		obuffer.push_back(mJumpLo);		
+		
+		
+
 		//Car Sprite		
-		unsigned int mCarsAddr = VRAM_offset + tSize;
+		unsigned int mCarsAddr = VRAM_offset + tSize + JUMP_size;
 
 		std::cout << "Car Addr: " << mCarsAddr << std::endl;
 		
@@ -80,7 +112,7 @@ int main(int argc, char *argv[]){
 		obuffer.push_back(mCarLo);		
 
 		//Boom Sprite		
-		unsigned int mBoomAddr = VRAM_offset + tSize + CARS_size;
+		unsigned int mBoomAddr = VRAM_offset + tSize + CARS_size + JUMP_size;
 
 		std::cout << "Boom Addr: " << mBoomAddr << std::endl;
 		
@@ -106,42 +138,10 @@ int main(int argc, char *argv[]){
 	
 		obuffer.push_back(mBoomHi);
 		obuffer.push_back(mBoomLo);		
-
-		
-		//CD TXT Sprite	
-		/*
-		unsigned int mCDAddr = VRAM_offset + tSize + CARS_size + BOOM_size;
-		
-		unsigned char mCDLo,mCDHi;
-		
-		std::cout << "TXT CD Addr: " << mCDAddr << std::endl;
-		
-		mCDLo = (unsigned char)(mCDAddr & 0x00ff);
-		mCDHi = (unsigned char)((mCDAddr >> 8) & 0x00ff);
-	
-		std::cout << "TXT CD Addr Hi: " << (int)(mCDHi) << std::endl;
-		std::cout << "TXT CD Addr Lo: " << (int)(mCDLo) << std::endl;		
-
-	
-		obuffer.push_back(mCDHi);
-		obuffer.push_back(mCDLo);		
-		
-		mCDAddr = mCDAddr >> 5;
-		
-		mCDLo = (unsigned char)(mCDAddr & 0x00ff);
-		mCDHi = (unsigned char)((mCDAddr >> 8) & 0x00ff);
-		
-		std::cout << "TXT CD Short Hi: " << (int)(mCDHi) << std::endl;
-		std::cout << "TXT CD Short Lo: " << (int)(mCDLo) << std::endl << std::endl;		
-
-	
-		obuffer.push_back(mCDHi);
-		obuffer.push_back(mCDLo);		
-		
-		*/
+				
 
 		//LAPS TXT Sprite	
-		unsigned int mLPAddr = VRAM_offset + tSize + CARS_size + BOOM_size;
+		unsigned int mLPAddr = VRAM_offset + tSize + CARS_size + BOOM_size + JUMP_size;
 		
 		std::cout << "TXT Laps Addr: " << mLPAddr << std::endl;
 		

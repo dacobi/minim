@@ -29,13 +29,30 @@ void load_game(char clvl){
 	while(li < (clvl - 1)){
 		sload = 0;
 		
-		while(sload < 12){
+		while(sload < 16){
 			cload = cbm_k_acptr();
 			sload++;
 		}
 						
 		li++;														
 	}
+
+	//Load Jump Sprite Addrs
+	cload = cbm_k_acptr();
+	mGame.mJumpAddr = cload;
+	mGame.mJumpAddr = mGame.mJumpAddr << 8;
+	
+	cload = cbm_k_acptr();
+	mGame.mJumpAddr += cload;
+	
+	cload = cbm_k_acptr();
+	mGame.mJumpHi = cload;
+	mGame.mJumpHi = mGame.mJumpHi << 8;
+	
+	cload = cbm_k_acptr();
+	mGame.mJumpHi += cload;
+	mGame.mJumpLo = cload;
+
 
 	//Load Car Sprite Addrs
 	cload = cbm_k_acptr();
@@ -69,26 +86,7 @@ void load_game(char clvl){
 	cload = cbm_k_acptr();
 	mGame.mBoomHi += cload;
 	mGame.mBoomLo = cload;
-	
-
-	//Load TXTCD Sprite Addrs
-	/*
-	cload = cbm_k_acptr();
-	mGame.mTXTCDAddr = cload;
-	mGame.mTXTCDAddr = mGame.mTXTCDAddr << 8;
-	
-	cload = cbm_k_acptr();
-	mGame.mTXTCDAddr += cload;
-	
-	cload = cbm_k_acptr();
-	mGame.mTXTCDHi = cload;
-	mGame.mTXTCDHi = mGame.mTXTCDHi << 8;
-	
-	cload = cbm_k_acptr();
-	mGame.mTXTCDHi += cload;
-	mGame.mTXTCDLo = cload;
-	*/
-	
+		
 	//Load TXTLaps Sprite Addrs
 	cload = cbm_k_acptr();
 	mGame.mTXTLapsAddr = cload;
@@ -585,6 +583,15 @@ void set_player(int pi, struct Player *cPlayer, struct Control *cControl, struct
 	cPlayer->mBoomCount = 0;
 	cPlayer->mBoomDelay = 0;
 	
+	cPlayer->bAirBorn = 0;
+	cPlayer->mJumpState = 0;
+	cPlayer->mJumpPos = 0;
+	cPlayer->mJumpLength = 0;
+	cPlayer->mJumpSpeed = 0;	
+	cPlayer->bBounceCount = 0;
+	cPlayer->mbBounceLength = 0;	
+
+	
 	cPlayer->bIsOutside = 0;
 	
 	cPlayer->PPlace.mPlayer = pi;
@@ -598,7 +605,7 @@ char check_collision_cars(struct Player *cCar1, struct Player *cCar2){
 	int nDX,nDY,cDX,cDY;
 	int colx, coly, colval;
 	
-	if( (cCar1->bIsAlive == 0) || (cCar2->bIsAlive == 0) ){
+	if( (cCar1->bIsAlive == 0) || (cCar2->bIsAlive == 0) || (cCar1->bAirBorn == 1) || (cCar2->bAirBorn == 1) ){
 		return 0;
 	}
 
@@ -1053,6 +1060,80 @@ void apply_physics(struct Player *cPlayer){
    int tmprx;
    int tmpry;
 
+   if(cPlayer->bAirBorn){
+    
+    if(cPlayer->bBounceCount){
+    	if(cPlayer->mbBounceLength){
+
+    		cPlayer->mbBounceLength--;
+    		
+    		if(cPlayer->mbBounceLength == 0){
+    			cPlayer->bBounceCount--;
+    			cPlayer->bAirBorn = 0;
+    			cPlayer->mJumpState = 0;
+    			if(cPlayer->bBounceCount){
+    				cPlayer->mbBounceLength = MBOUNCETIME;
+    			}
+    			play_bump(550, 10, 8);
+    		}
+    	}	
+    } else {
+    
+	
+
+    
+    cPlayer->mJumpPos++;
+   	
+    switch(cPlayer->mJumpState){
+    	case 1:
+    		if(cPlayer->mJumpPos > cPlayer->mJumpSpeed){
+    			cPlayer->mJumpState++;
+    		}
+    		break;
+    	case 2:
+    		if(cPlayer->mJumpPos > (cPlayer->mJumpLength - cPlayer->mJumpSpeed)){
+    			cPlayer->mJumpState++;
+    		}
+    		break;
+    	case 3:
+    		if(cPlayer->mJumpPos >= cPlayer->mJumpLength){
+    			cPlayer->mJumpState = 0;
+    			cPlayer->bAirBorn = 0;
+    			cPlayer->bBounceCount = 1;
+    			cPlayer->mbBounceLength = MBOUNCETIME;
+    			play_bump(550, 10, 8);
+    		}
+    		break;
+    	default:
+    		break;
+    
+    };
+    
+    }
+   
+    tmpdirx = getsin(cPlayer->mDir);
+    tmpdiry = getcos(cPlayer->mDir);
+
+    cPlayer->mVelX = ((tmpdirx * cPlayer->mVel))/2550;
+    cPlayer->mVelY = ((tmpdiry * cPlayer->mVel))/2550;
+
+   
+   } else {
+   
+       	if(cPlayer->mbBounceLength){
+       		cPlayer->mbBounceLength--;
+    		
+    		if(cPlayer->mbBounceLength == 0){
+    			cPlayer->bAirBorn = 1;
+    			cPlayer->mJumpState = 1;
+    			cPlayer->mbBounceLength = MBOUNCETIME;
+    			//play_boing(250, 10, 2);
+    			play_bump(550, 10, 8);
+    		}
+
+       	}
+  
+
     if(cPlayer->mControl->mAccP == 1){
         cPlayer->mVel++;
     } else {
@@ -1104,6 +1185,8 @@ void apply_physics(struct Player *cPlayer){
     cPlayer->mVelY = ((tmpdiry * cPlayer->mVel) + (tmply * cPlayer->mVelL) + (tmpry * cPlayer->mVelR))/2550;
 
     cPlayer->pl_cur_dir = rangechk(rangechkcar(cPlayer->mDir));
+    
+    }
 //    cPlayer->pl_cur_dir = rangechk(cPlayer->mDir);
 
     cPlayer->mPos.x += cPlayer->mVelX;
@@ -1126,6 +1209,8 @@ void set_boom_sprite(struct PSprite *cSprite, struct Player *cPlayer){
  	}
  	
  	cPlayer->mBoomDelay--;
+ 	
+        cSprite->dimensions = SPRITE_32_BY_32;
     	
     	cSprite->blocklo = mGame.mBoomLo + (SPRITE_BLOCKLO(cPlayer->mBoomCount * SPRITE_SIZE) & 0x00ff); // SPRITE_BLOCKLO(VRAM_boom + (cPlayer->mBoomCount * SPRITE_SIZE));
     	cSprite->blockhi = ((mGame.mBoomHi + SPRITE_BLOCKLO((cPlayer->mBoomCount * SPRITE_SIZE))) >> 8) & 0x00ff;// mGame.mBoomHi; // SPRITE_BLOCKHI(VRAM_boom + (cPlayer->mBoomCount * SPRITE_SIZE));    	
@@ -1135,6 +1220,217 @@ void set_boom_sprite(struct PSprite *cSprite, struct Player *cPlayer){
 	cSprite->mPos.y = (240-16) + ( cPlayer->mPos.y - mGame.mViewport.y);
     }
 
+}
+
+void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
+	
+	unsigned short blockoff;
+	
+	blockoff = 0;
+	
+	 	if((cPlayer->pl_cur_dir == DIR_45) || ( cPlayer->pl_cur_dir == DIR_135) || ( cPlayer->pl_cur_dir == DIR_225) || ( cPlayer->pl_cur_dir == DIR_315)){
+ 	
+                blockoff=2 * JUMP_SIZE;
+                        
+		switch( cPlayer->pl_cur_dir){
+		    case DIR_45:
+			cSprite->flipx = 0x0;
+	                cSprite->flipy = 0x0;
+		    break;
+                    case DIR_135:
+			cSprite->flipx = 0x0;
+	                cSprite->flipy = 0x2;
+                    break;
+                    case DIR_225:
+			cSprite->flipx = 0x1;
+	                cSprite->flipy = 0x2;
+                    break;
+                    case DIR_315:
+			cSprite->flipx = 0x1;
+	                cSprite->flipy = 0x0;
+                    break;
+
+		
+		}
+	} else {
+
+
+		if(( cPlayer->pl_cur_dir >= DIR_0) && ( cPlayer->pl_cur_dir <= DIR_90)){
+		
+			cSprite->flipx = 0x0;
+        	        cSprite->flipy = 0x0;
+        	        
+		        //blockoff = ( ( cPlayer->pl_cur_dir - 1 ) * SPRITE_SIZE);
+		        
+		        switch(cPlayer->pl_cur_dir){
+		        	case DIR_0:
+		        		blockoff = 0;
+		        		break;
+		        	case DIR_10:
+		        		blockoff = 0;
+		        		break;
+		        	case DIR_20:
+		        		blockoff = JUMP_SIZE;
+		        		break;
+		        	case DIR_30:
+		        		blockoff = JUMP_SIZE;
+		        		break;
+		        	case DIR_40:
+		        		blockoff = JUMP_SIZE * 2;
+		        		break;
+		        	case DIR_50:
+		        		blockoff = JUMP_SIZE * 2;
+		        		break;
+		        	case DIR_60:
+		        		blockoff = JUMP_SIZE * 3;
+		        		break;
+		        	case DIR_70:
+		        		blockoff = JUMP_SIZE * 3;
+		        		break;
+		        	case DIR_80:
+		        		blockoff = JUMP_SIZE * 4;
+		        		break;
+		        	case DIR_90:
+		        		blockoff = JUMP_SIZE * 4;
+		        		break;		        
+		        };
+		        
+		} else
+
+        	if(( cPlayer->pl_cur_dir > DIR_90) && ( cPlayer->pl_cur_dir <= DIR_180)){
+        	        
+        	        cSprite->flipx = 0x0;
+        	        cSprite->flipy = 0x2;
+        	        
+		        //blockoff = ( ( 9 - ( cPlayer->pl_cur_dir - 10 )) * SPRITE_SIZE);
+		        
+		       switch(cPlayer->pl_cur_dir){
+		        	case DIR_180:
+		        		blockoff = 0;
+		        		break;
+		        	case DIR_170:
+		        		blockoff = 0;
+		        		break;
+		        	case DIR_160:
+		        		blockoff = JUMP_SIZE;
+		        		break;
+		        	case DIR_150:
+		        		blockoff = JUMP_SIZE;
+		        		break;
+		        	case DIR_140:
+		        		blockoff = JUMP_SIZE * 2;
+		        		break;
+		        	case DIR_130:
+		        		blockoff = JUMP_SIZE * 2;
+		        		break;
+		        	case DIR_120:
+		        		blockoff = JUMP_SIZE * 3;
+		        		break;
+		        	case DIR_110:
+		        		blockoff = JUMP_SIZE * 3;
+		        		break;
+		        	case DIR_100:
+		        		blockoff = JUMP_SIZE * 4;
+		        		break;		        
+		        };
+
+	        } else
+
+	        if(( cPlayer->pl_cur_dir > DIR_180) && ( cPlayer->pl_cur_dir <= DIR_270)){
+
+	                cSprite->flipx = 0x1;
+	                cSprite->flipy = 0x2;
+	                
+	                //blockoff = ( (cPlayer->pl_cur_dir-19) * SPRITE_SIZE);
+	                
+		        switch(cPlayer->pl_cur_dir){
+		        	case DIR_190:
+		        		blockoff = 0;
+		        		break;
+		        	case DIR_200:
+		        		blockoff = JUMP_SIZE;
+		        		break;
+		        	case DIR_210:
+		        		blockoff = JUMP_SIZE;
+		        		break;
+		        	case DIR_220:
+		        		blockoff = JUMP_SIZE * 2;
+		        		break;
+		        	case DIR_230:
+		        		blockoff = JUMP_SIZE * 2;
+		        		break;
+		        	case DIR_240:
+		        		blockoff = JUMP_SIZE * 3;
+		        		break;
+		        	case DIR_250:
+		        		blockoff = JUMP_SIZE * 3;
+		        		break;
+		        	case DIR_260:
+		        		blockoff = JUMP_SIZE * 4;
+		        		break;
+		        	case DIR_270:
+		        		blockoff = JUMP_SIZE * 4;
+		        		break;		        
+		        };
+	                
+
+	        } else
+
+	       	if( ( cPlayer->pl_cur_dir > DIR_270) &&  ( cPlayer->pl_cur_dir <= DIR_350) ){
+	                
+	                cSprite->flipx = 0x1;
+	                cSprite->flipy = 0x0;
+	                
+	                //blockoff = ( (9-( cPlayer->pl_cur_dir-28)) * SPRITE_SIZE);
+	                
+       		       switch(cPlayer->pl_cur_dir){
+		        	case DIR_350:
+		        		blockoff = 0;
+		        		break;
+		        	case DIR_340:
+		        		blockoff = JUMP_SIZE;
+		        		break;
+		        	case DIR_330:
+		        		blockoff = JUMP_SIZE;
+		        		break;
+		        	case DIR_320:
+		        		blockoff = JUMP_SIZE * 2;
+		        		break;
+		        	case DIR_310:
+		        		blockoff = JUMP_SIZE * 2;
+		        		break;
+		        	case DIR_300:
+		        		blockoff = JUMP_SIZE * 3;
+		        		break;
+		        	case DIR_290:
+		        		blockoff = JUMP_SIZE * 3;
+		        		break;
+		        	case DIR_280:
+		        		blockoff = JUMP_SIZE * 4;
+		        		break;		        
+		        };
+
+	        }	        	        	        
+
+        }
+        
+        if(cPlayer->mJumpState % 2){
+        	blockoff += JUMP_SIZE * 5;
+        }
+        
+        cSprite->dimensions = SPRITE_64_BY_64;
+        
+        cSprite->blocklo = mGame.mJumpLo + (SPRITE_BLOCKLO(blockoff) & 0x00ff); //SPRITE_BLOCKLO(VRAM_sprites+blockoff);
+	cSprite->blockhi = ((mGame.mJumpHi + SPRITE_BLOCKLO(blockoff)) >> 8) & 0x00ff;    
+    
+	cSprite->mPos.x = (320-32) + ( cPlayer->mPos.x - mGame.mViewport.x);
+    	cSprite->mPos.y = (240-32) + ( cPlayer->mPos.y - mGame.mViewport.y);
+    
+	    if(cPlayer->mPlayer != mGame.mLeader->mPlayer){
+    		if( (cSprite->mPos.x < 0) || (cSprite->mPos.x > 608) || (cSprite->mPos.y < 0) || (cSprite->mPos.y > 448)){
+    			killPlayer(cPlayer);
+	    	}    
+	    }         	
 }
 
 void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
@@ -1354,6 +1650,7 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
         
         */
 	
+    cSprite->dimensions = SPRITE_32_BY_32;
 
     cSprite->blocklo = mGame.mCarsLo + (SPRITE_BLOCKLO(blockoff) & 0x00ff); //SPRITE_BLOCKLO(VRAM_sprites+blockoff);
     cSprite->blockhi = ((mGame.mCarsHi + SPRITE_BLOCKLO(blockoff)) >> 8) & 0x00ff;    
@@ -1372,7 +1669,11 @@ void process_sprites(){
 
 	if(mGame.Player1.bIsVisible){
 		if(mGame.Player1.bIsAlive){
-			calc_sprite_pos(&mGame.PSprite1, &mGame.Player1);
+			if(mGame.Player1.bAirBorn){
+				calc_jump_pos(&mGame.PSprite1, &mGame.Player1);
+			} else {					
+				calc_sprite_pos(&mGame.PSprite1, &mGame.Player1);
+			}
 		} else {
 			set_boom_sprite(&mGame.PSprite1, &mGame.Player1);		
 		}
@@ -1380,7 +1681,12 @@ void process_sprites(){
 	
 	if(mGame.Player2.bIsVisible){
 		if(mGame.Player2.bIsAlive){
-			calc_sprite_pos(&mGame.PSprite2, &mGame.Player2);
+			if(mGame.Player2.bAirBorn){
+				calc_jump_pos(&mGame.PSprite2, &mGame.Player2);
+			} else {					
+				calc_sprite_pos(&mGame.PSprite2, &mGame.Player2);
+			}
+
 		} else {
 			set_boom_sprite(&mGame.PSprite2, &mGame.Player2);		
 		}
@@ -1389,7 +1695,12 @@ void process_sprites(){
 	
 	if(mGame.Player3.bIsVisible){
 		if(mGame.Player3.bIsAlive){
-			calc_sprite_pos(&mGame.PSprite3, &mGame.Player3);
+			if(mGame.Player3.bAirBorn){
+				calc_jump_pos(&mGame.PSprite3, &mGame.Player3);
+			} else {					
+				calc_sprite_pos(&mGame.PSprite3, &mGame.Player3);
+			}
+
 		} else {
 			set_boom_sprite(&mGame.PSprite3, &mGame.Player3);		
 		}
@@ -1664,6 +1975,7 @@ void process_player(struct Player *cPlayer){
 	int dist;
 	int dx,dy,cindex;
 	unsigned char cval;
+	unsigned char cflip;	
 	char mDebug;
 	char bDebug;	
 //	unsigned char* colmap;
@@ -1770,6 +2082,9 @@ void process_player(struct Player *cPlayer){
 	
 		cval = mColmap[cindex];
 		
+		cflip = cval >> 6;
+		cval = cval & 0x3f;
+		
 		if(cval == MTRACKOUTSIDE){
 			if(cPlayer->bIsOutside > 0){
 
@@ -1803,6 +2118,18 @@ void process_player(struct Player *cPlayer){
 				} else {
 					cPlayer->mMaxX = MSPEEDMAX;
 				}						
+				
+				if( (cval == MTRACKJUMPR) || (cval == MTRACKJUMPL)){
+					if(cPlayer->bAirBorn == 0){
+						cPlayer->bAirBorn = 1;
+						cPlayer->mJumpState = 1;
+						cPlayer->mJumpPos = 0;
+						cPlayer->mJumpLength = cPlayer->mVel >> 1;
+						cPlayer->mJumpSpeed = cPlayer->mVel >> 3;
+						play_boing(250, 10, 5);					
+					}
+					
+				}					
 			}
 		}
 		
@@ -2472,6 +2799,24 @@ void play_beep(int cbasefq, int clength){
 
 
 
+void play_boing(int cbasefq, int clength, int cadd){
+	
+	mGame.mBoing.mVol = 0xff;
+	mGame.mBoing.mOn = 1;
+	mGame.mBoing.mFreq = cbasefq;
+	mGame.mBoing.mLength = clength;
+	mGame.mBoing.mFInc = cadd;
+	mGame.mBoing.mChan = 9;
+	
+	mGame.mChannels[mGame.mBoing.mChan].mVol = mGame.mBoing.mVol;
+	mGame.mChannels[mGame.mBoing.mChan].mType = 0x0;
+	mGame.mChannels[mGame.mBoing.mChan].mPuls = 0x60;				
+	mGame.mChannels[mGame.mBoing.mChan].mFreqHi = (mGame.mBoing.mFreq & 0xff00) >> 8; 
+	mGame.mChannels[mGame.mBoing.mChan].mFreqLo = mGame.mBoing.mFreq & 0x00ff;
+
+
+}
+
 void play_crash(int cbasefq, int clength, int cdec){
 	mGame.mCrash.mVol = 0xff;
 	mGame.mCrash.mOn = 1;
@@ -2599,6 +2944,24 @@ void process_sound(){
 			mGame.mChannels[mGame.mCrash.mChan - 1].mVol = 0;					
 		}
 	}
+	
+	if(mGame.mBoing.mOn){
+
+		mGame.mBoing.mLength--;
+	
+		mGame.mBoing.mFreq += mGame.mBoing.mFInc;
+		//mGame.mBoing.mFInc += mGame.mBoing.mFInc;
+		
+		mGame.mChannels[mGame.mBoing.mChan].mFreqHi = (mGame.mBoing.mFreq & 0xff00) >> 8; 
+		mGame.mChannels[mGame.mBoing.mChan].mFreqLo = mGame.mBoing.mFreq & 0x00ff;
+
+		if(mGame.mBoing.mLength < 1){
+			mGame.mBoing.mOn = 0;
+			mGame.mBoing.mVol = 0;
+			mGame.mChannels[mGame.mBoing.mChan].mVol = 0;
+		}	
+	}
+
 		
 	if(mGame.mBump.mOn){
 		mGame.mBump.mLength--;
@@ -2917,9 +3280,7 @@ void load_level(){
    
    RAM_BANK = 1; 
    
-   //SETPATHNUM(mclmpath, mGame.mLevel, MCLMPOS);
-   SETPATHNUM(mclmpath, 1, MCLMPOS);
-      
+   SETPATHNUM(mclmpath, mGame.mLevel, MCLMPOS);
    loadFile(mclmpath, (unsigned short)BANK_RAM);
       
    RAM_BANK = 1; 
@@ -2947,6 +3308,9 @@ void load_level(){
      
    VERA.layer0.hscroll = 0;
    VERA.layer0.vscroll = 0;
+
+   loadVera(mjumppath, mGame.mJumpAddr, 3);      	   
+   
    
    //loadVera(mcarspath, VRAM_sprites, 3);
    loadVera(mcarspath, mGame.mCarsAddr, 3);      

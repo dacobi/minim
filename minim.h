@@ -21,6 +21,7 @@ char randidx;
 #define	    SPRITE_8_BY_8		        0x0
 #define	    SPRITE_64_BY_64		        0xf0
 #define     SPRITE_SIZE				512
+#define     JUMP_SIZE				2048
 
 #define	    SPRITE_DISABLED		        0
 #define	    SPRITE_LAYER_BACKGROUND		0x4
@@ -277,6 +278,7 @@ char mtxintpath[10] = "dat/txint";
 char mintropath[10] = "dat/intro";
 char mpalipath[9] = "dat/pali";
 
+char mjumppath[9] = "dat/jump";
 char mcarspath[9] = "dat/cars";
 char mboompath[9] = "dat/boom";
 char mtxcdpath[9] = "dat/txcd";
@@ -334,9 +336,11 @@ extern void rm_keyboard_irq();
 #define GETINDEX(CX, CY) (CX >> 4) + ((CY >> 4) << 7)
 #define mColmap BANK_RAM
 
-#define MTRACKON 0x1F
-#define MTRACKONEDGE 0x2F
+#define MTRACKON 0x0f
+#define MTRACKONEDGE 0x1f
 #define MTRACKOUTSIDE 0x0
+#define MTRACKJUMPR 0x16
+#define MTRACKJUMPL 0x19
 
 #define MSPEEDMAX 80
 #define MSPEEDMAXONEDGE 65
@@ -427,6 +431,8 @@ typedef struct Placement{
 	unsigned int mPFactor;
 };
 
+#define MBOUNCETIME 10
+
 typedef struct Player {
 	int mDir;
 
@@ -447,6 +453,14 @@ typedef struct Player {
 	
 	char bIsOutside;
 	int mOutCount;
+	
+	char bAirBorn;
+	char mJumpState;
+	char bBounceCount;
+	unsigned short mbBounceLength;	
+	unsigned short mJumpPos;
+	unsigned short mJumpLength;
+	unsigned short mJumpSpeed;	
 	
 	char bIsAlive;
 	char bIsValid;
@@ -530,6 +544,17 @@ typedef struct SCrash{
 	int mLastCount;
 };
 
+typedef struct SBoing{
+	char mChan;
+	unsigned int mFreq;
+	char mVol;
+	char mOn;
+	unsigned int mFInc;
+	int mLength;
+	int mLastCount;
+};
+
+
 typedef struct Menu {   
 	
 	struct PSprite mMenuLVL;
@@ -606,7 +631,7 @@ typedef struct Game {
    
    unsigned short mCarsAddr;
    unsigned short mBoomAddr;
-//   unsigned short mTXTCDAddr;
+   unsigned short mJumpAddr;
    unsigned short mTXTLapsAddr;
    
    unsigned short mCarsHi;
@@ -615,8 +640,8 @@ typedef struct Game {
    unsigned short mBoomHi;
    char mBoomLo;
    
-//   unsigned short mTXTCDHi;
-//   char mTXTCDLo;
+   unsigned short mJumpHi;
+   char mJumpLo;
 
    unsigned short mTXTLapsHi;
    char mTXTLapsLo;
@@ -629,6 +654,7 @@ typedef struct Game {
    struct SBeep mCBeep;
    struct SCrash mCrash;
    struct SCrash mBump;   
+   struct SBoing mBoing;
    int mBeepLength;
 
    int mFinishLine;
@@ -817,6 +843,8 @@ void apply_physics(struct Player *cPlayer);
 
 void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer);
 
+void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer);
+
 void set_boom_sprite(struct PSprite *cSprite, struct Player *cPlayer);
 
 void process_sprites();
@@ -870,6 +898,8 @@ void init_menulines();
 void play_beep(int cbasefq, int clength);
 
 void play_click(int cbasefq, int clength, int cadd);
+
+void play_boing(int cbasefq, int clength, int cadd);
 
 void play_crash(int cbasefq, int clength, int cdec);
 

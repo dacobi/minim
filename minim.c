@@ -1072,7 +1072,7 @@ void apply_physics(struct Player *cPlayer){
     			cPlayer->bAirBorn = 0;
     			cPlayer->mJumpState = 0;
     			if(cPlayer->bBounceCount){
-    				cPlayer->mbBounceLength = MBOUNCETIME;
+    				cPlayer->mbBounceLength = MBOUNCEWAIT;
     			}
     			play_bump(550, 10, 8);
     		}
@@ -1100,7 +1100,7 @@ void apply_physics(struct Player *cPlayer){
     			cPlayer->mJumpState = 0;
     			cPlayer->bAirBorn = 0;
     			cPlayer->bBounceCount = 1;
-    			cPlayer->mbBounceLength = MBOUNCETIME;
+    			cPlayer->mbBounceLength = MBOUNCEWAIT;
     			play_bump(550, 10, 8);
     		}
     		break;
@@ -1815,7 +1815,7 @@ void process_physics(){
 
 void process_bot(struct Player *cBot){
 	
-	int dist, angle, diffa;
+	int angle, diffa; //dist, 
 	int dx,dy;
 	
 	cBot->mControl->mAccP = 1;
@@ -1873,9 +1873,9 @@ void process_bot(struct Player *cBot){
 	}
 
 
-	dist = dx+dy;
+	//dist = dx+dy;
 
-	if(dist < 65){
+	if(getDist(dx, dy)){
 //	if((dx < 32) && (dy <32)){
 		//isdone = 1;
 		if(cBot->mControl->mNextWay == (mGame.mWaypointNum-1)){
@@ -1970,9 +1970,22 @@ void setPlayerPlace(struct Player *cPlayer){
 	//}
 }
 
+char getDist(int dx, int dy){
+
+	if( ( dx > 64 ) || ( dy > 64 ) ){
+		return 0;
+	}
+	
+	if( ((dx*dx) + (dy*dy)) < 4096 ){
+		return 1;	
+	}
+	
+	return 0;
+}
+
 void process_player(struct Player *cPlayer){
 	
-	int dist;
+	//int dist;
 	int dx,dy,cindex;
 	unsigned char cval;
 	unsigned char cflip;	
@@ -1997,10 +2010,10 @@ void process_player(struct Player *cPlayer){
 		}
 
 
-		dist = dx+dy;
+		//dist = dx+dy;
 
 		
-		if(dist < 65){
+		if(getDist(dx, dy)){
 			if(cPlayer->mControl->mNextWay == (mGame.mWaypointNum-1)){
 				mDebug = cPlayer->mControl->mNextWay;
 				bDebug = 1;
@@ -2106,7 +2119,8 @@ void process_player(struct Player *cPlayer){
 			if(cPlayer->bIsOutside > 0){
 				cPlayer->bIsOutside = 0;	
 				cPlayer->bIsValid = 1;	
-				cPlayer->mOutCount = MOUTKILL;								
+				cPlayer->mOutCount = MOUTKILL;
+				checkWay(cPlayer);
 			}
 			
 			if(cval == MTRACKONEDGE){
@@ -2175,6 +2189,77 @@ void set_leader(char nlead){
 		}				
 	}
 }
+
+void swap_dist(char p1, char p2){
+
+	struct Placement* tmpPlace;
+	
+	tmpPlace = mGame.mWayDistSort[p1];
+	
+	mGame.mWayDistSort[p1] = mGame.mWayDistSort[p2];
+	mGame.mWayDistSort[p2] = tmpPlace;
+
+}
+
+void sort_dist(){
+
+	if(mGame.mWayDistSort[0]->mPFactor > mGame.mWayDistSort[1]->mPFactor){
+		swap_dist(0, 1);
+	}
+	
+	if(mGame.mWayDistSort[2]->mPFactor > mGame.mWayDistSort[3]->mPFactor){
+		swap_dist(2, 3);
+	}
+	
+
+	if(mGame.mWayDistSort[0]->mPFactor > mGame.mWayDistSort[2]->mPFactor){
+		swap_dist(0, 2);
+	}
+	
+	if(mGame.mWayDistSort[3]->mPFactor > mGame.mWayDistSort[1]->mPFactor){
+		swap_dist(3, 1);
+	}
+
+}
+
+
+void checkWay(struct Player *cPlayer){
+
+	int dx, dy;
+	unsigned int sx,sy;
+	char wi, nextw;
+	
+	nextw = cPlayer->mControl->mNextWay;
+	
+	for(wi = 0; wi < 4; wi++){
+	
+		dx = (cPlayer->mPos.x - mGame.mWaypoints[nextw].x);
+		dy = (cPlayer->mPos.y - mGame.mWaypoints[nextw].y);	
+	
+		if(dx < 0){sx = -dx;} else {sx = dx;}
+		if(dy < 0){sy = -dy;} else {sy = dy;}
+	
+		sx = sx >> 3;
+		sy = sy >> 3;
+	
+		if(sx > 181){sx = 181;}
+		if(sy > 181){sy = 181;}	
+
+		mGame.mWayDist[wi].mPlayer = nextw;
+		mGame.mWayDist[wi].mPFactor = (sx * sx) + (sy * sy);
+		
+		nextw++;
+		
+		if(nextw == mGame.mWaypointNum){
+			nextw = 0;
+		}	
+	}
+	
+	sort_dist();
+
+	cPlayer->mControl->mNextWay = mGame.mWayDistSort[0]->mPlayer;
+}
+
 
 void swap_placements(char p1, char p2){
 
@@ -4260,6 +4345,10 @@ void setup_race(){
 
 
 	};
+   }
+   
+   for(cplc = 0; cplc < 4; cplc++){
+	mGame.mWayDistSort[cplc] = &mGame.mWayDist[cplc];
    }
    
    mGame.mLeader = mGame.Players[0];

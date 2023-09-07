@@ -432,6 +432,7 @@ typedef struct Placement{
 };
 
 #define MBOUNCETIME 10
+#define MBOUNCEWAIT 5
 
 typedef struct Player {
 	int mDir;
@@ -714,6 +715,9 @@ typedef struct Game {
    
    struct Vec2 mOldView;
    
+   struct Placement mWayDist[4];
+   struct Placement* mWayDistSort[4];
+   
    char bMoveToLead;
    char bViewXDone;
    char bViewYDone;   
@@ -851,6 +855,8 @@ void process_sprites();
 
 char getWayState(int wState, int cX, int cY, int vX, int vY);
 
+char getDist(int dx, int dy);
+
 void process_physics();
 
 void process_bot(struct Player *cBot);
@@ -864,6 +870,12 @@ void get_live_players();
 //void sort_players4();
 
 void sort_players3();
+
+void swap_dist(char p1, char p2);
+
+void sort_dist();
+
+void checkWay(struct Player *cPlayer);
 
 void setPlayerPlace(struct Player *cPlayer);
 

@@ -1,4 +1,25 @@
 #include "minim.h"
+#include "spritetab.h"
+
+
+void load_screen(){
+
+	char jj,ii;
+
+	VERA.display.video = 1;
+	
+	VERA.address_hi = VERA_INC_1 + 0x1; 
+	
+    	VERA.address = 0xB000;
+
+		 
+	for(jj = 0; jj < 60; jj++){
+	    for(ii = 0; ii < 80; ii++){	     	    
+			VERA.data0 = 'B';
+    	    }
+    	}
+}
+
 
 char get_game_levels(){
 	char clevels;
@@ -1261,7 +1282,7 @@ void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
         	        cSprite->flipy = 0x0;
         	        
 		        //blockoff = ( ( cPlayer->pl_cur_dir - 1 ) * SPRITE_SIZE);
-		        
+		        /*
 		        switch(cPlayer->pl_cur_dir){
 		        	case DIR_0:
 		        		blockoff = 0;
@@ -1294,7 +1315,7 @@ void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
 		        		blockoff = JUMP_SIZE * 4;
 		        		break;		        
 		        };
-		        
+		        */
 		} else
 
         	if(( cPlayer->pl_cur_dir > DIR_90) && ( cPlayer->pl_cur_dir <= DIR_180)){
@@ -1303,7 +1324,7 @@ void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
         	        cSprite->flipy = 0x2;
         	        
 		        //blockoff = ( ( 9 - ( cPlayer->pl_cur_dir - 10 )) * SPRITE_SIZE);
-		        
+		        /*
 		       switch(cPlayer->pl_cur_dir){
 		        	case DIR_180:
 		        		blockoff = 0;
@@ -1333,6 +1354,7 @@ void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
 		        		blockoff = JUMP_SIZE * 4;
 		        		break;		        
 		        };
+		        */
 
 	        } else
 
@@ -1342,7 +1364,7 @@ void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
 	                cSprite->flipy = 0x2;
 	                
 	                //blockoff = ( (cPlayer->pl_cur_dir-19) * SPRITE_SIZE);
-	                
+	                /*
 		        switch(cPlayer->pl_cur_dir){
 		        	case DIR_190:
 		        		blockoff = 0;
@@ -1372,7 +1394,7 @@ void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
 		        		blockoff = JUMP_SIZE * 4;
 		        		break;		        
 		        };
-	                
+	                */
 
 	        } else
 
@@ -1382,7 +1404,7 @@ void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
 	                cSprite->flipy = 0x0;
 	                
 	                //blockoff = ( (9-( cPlayer->pl_cur_dir-28)) * SPRITE_SIZE);
-	                
+	                /*
        		       switch(cPlayer->pl_cur_dir){
 		        	case DIR_350:
 		        		blockoff = 0;
@@ -1409,9 +1431,10 @@ void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
 		        		blockoff = JUMP_SIZE * 4;
 		        		break;		        
 		        };
-
+			*/
 	        }	        	        	        
-
+		
+		blockoff = JUMP_SIZE * (unsigned short)(jumpoff[cPlayer->pl_cur_dir - 1]);
         }
         
         if(cPlayer->mJumpState % 2){
@@ -1485,6 +1508,7 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
         	        
 		        //blockoff = ( ( cPlayer->pl_cur_dir - 1 ) * SPRITE_SIZE);
 		        
+		        /*
 		        switch(cPlayer->pl_cur_dir){
 		        	case DIR_0:
 		        		blockoff = 0;
@@ -1517,6 +1541,7 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 		        		blockoff = SPRITE_SIZE * 9;
 		        		break;		        
 		        };
+		        */
 		        
 		} else
 
@@ -1527,6 +1552,7 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
         	        
 		        //blockoff = ( ( 9 - ( cPlayer->pl_cur_dir - 10 )) * SPRITE_SIZE);
 		        
+		       /*
 		       switch(cPlayer->pl_cur_dir){
 		        	case DIR_180:
 		        		blockoff = 0;
@@ -1556,7 +1582,7 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 		        		blockoff = SPRITE_SIZE * 8;
 		        		break;		        
 		        };
-
+			*/
 	        } else
 
 	        if(( cPlayer->pl_cur_dir > DIR_180) && ( cPlayer->pl_cur_dir <= DIR_270)){
@@ -1566,6 +1592,7 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 	                
 	                //blockoff = ( (cPlayer->pl_cur_dir-19) * SPRITE_SIZE);
 	                
+	                /*
 		        switch(cPlayer->pl_cur_dir){
 		        	case DIR_190:
 		        		blockoff = SPRITE_SIZE;
@@ -1595,7 +1622,7 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 		        		blockoff = SPRITE_SIZE * 9;
 		        		break;		        
 		        };
-	                
+	                */
 
 	        } else
 
@@ -1606,6 +1633,7 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 	                
 	                //blockoff = ( (9-( cPlayer->pl_cur_dir-28)) * SPRITE_SIZE);
 	                
+	                /*
        		       switch(cPlayer->pl_cur_dir){
 		        	case DIR_350:
 		        		blockoff = SPRITE_SIZE;
@@ -1632,8 +1660,9 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 		        		blockoff = SPRITE_SIZE * 8;
 		        		break;		        
 		        };
-
-	        }	        	        	        
+			*/
+	        }
+	        blockoff = SPRITE_SIZE * (unsigned short)(caroff[cPlayer->pl_cur_dir - 1]); 	        	        
         }
         
         if(blockoff > (10 * SPRITE_SIZE)){

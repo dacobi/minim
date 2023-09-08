@@ -1279,159 +1279,25 @@ void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
 		if(( cPlayer->pl_cur_dir >= DIR_0) && ( cPlayer->pl_cur_dir <= DIR_90)){
 		
 			cSprite->flipx = 0x0;
-        	        cSprite->flipy = 0x0;
-        	        
-		        //blockoff = ( ( cPlayer->pl_cur_dir - 1 ) * SPRITE_SIZE);
-		        /*
-		        switch(cPlayer->pl_cur_dir){
-		        	case DIR_0:
-		        		blockoff = 0;
-		        		break;
-		        	case DIR_10:
-		        		blockoff = 0;
-		        		break;
-		        	case DIR_20:
-		        		blockoff = JUMP_SIZE;
-		        		break;
-		        	case DIR_30:
-		        		blockoff = JUMP_SIZE;
-		        		break;
-		        	case DIR_40:
-		        		blockoff = JUMP_SIZE * 2;
-		        		break;
-		        	case DIR_50:
-		        		blockoff = JUMP_SIZE * 2;
-		        		break;
-		        	case DIR_60:
-		        		blockoff = JUMP_SIZE * 3;
-		        		break;
-		        	case DIR_70:
-		        		blockoff = JUMP_SIZE * 3;
-		        		break;
-		        	case DIR_80:
-		        		blockoff = JUMP_SIZE * 4;
-		        		break;
-		        	case DIR_90:
-		        		blockoff = JUMP_SIZE * 4;
-		        		break;		        
-		        };
-		        */
+        	        cSprite->flipy = 0x0;        	        
 		} else
 
         	if(( cPlayer->pl_cur_dir > DIR_90) && ( cPlayer->pl_cur_dir <= DIR_180)){
         	        
         	        cSprite->flipx = 0x0;
-        	        cSprite->flipy = 0x2;
-        	        
-		        //blockoff = ( ( 9 - ( cPlayer->pl_cur_dir - 10 )) * SPRITE_SIZE);
-		        /*
-		       switch(cPlayer->pl_cur_dir){
-		        	case DIR_180:
-		        		blockoff = 0;
-		        		break;
-		        	case DIR_170:
-		        		blockoff = 0;
-		        		break;
-		        	case DIR_160:
-		        		blockoff = JUMP_SIZE;
-		        		break;
-		        	case DIR_150:
-		        		blockoff = JUMP_SIZE;
-		        		break;
-		        	case DIR_140:
-		        		blockoff = JUMP_SIZE * 2;
-		        		break;
-		        	case DIR_130:
-		        		blockoff = JUMP_SIZE * 2;
-		        		break;
-		        	case DIR_120:
-		        		blockoff = JUMP_SIZE * 3;
-		        		break;
-		        	case DIR_110:
-		        		blockoff = JUMP_SIZE * 3;
-		        		break;
-		        	case DIR_100:
-		        		blockoff = JUMP_SIZE * 4;
-		        		break;		        
-		        };
-		        */
-
+        	        cSprite->flipy = 0x2;        	        
 	        } else
 
 	        if(( cPlayer->pl_cur_dir > DIR_180) && ( cPlayer->pl_cur_dir <= DIR_270)){
 
 	                cSprite->flipx = 0x1;
-	                cSprite->flipy = 0x2;
-	                
-	                //blockoff = ( (cPlayer->pl_cur_dir-19) * SPRITE_SIZE);
-	                /*
-		        switch(cPlayer->pl_cur_dir){
-		        	case DIR_190:
-		        		blockoff = 0;
-		        		break;
-		        	case DIR_200:
-		        		blockoff = JUMP_SIZE;
-		        		break;
-		        	case DIR_210:
-		        		blockoff = JUMP_SIZE;
-		        		break;
-		        	case DIR_220:
-		        		blockoff = JUMP_SIZE * 2;
-		        		break;
-		        	case DIR_230:
-		        		blockoff = JUMP_SIZE * 2;
-		        		break;
-		        	case DIR_240:
-		        		blockoff = JUMP_SIZE * 3;
-		        		break;
-		        	case DIR_250:
-		        		blockoff = JUMP_SIZE * 3;
-		        		break;
-		        	case DIR_260:
-		        		blockoff = JUMP_SIZE * 4;
-		        		break;
-		        	case DIR_270:
-		        		blockoff = JUMP_SIZE * 4;
-		        		break;		        
-		        };
-	                */
-
+	                cSprite->flipy = 0x2;	                
 	        } else
 
 	       	if( ( cPlayer->pl_cur_dir > DIR_270) &&  ( cPlayer->pl_cur_dir <= DIR_350) ){
 	                
 	                cSprite->flipx = 0x1;
-	                cSprite->flipy = 0x0;
-	                
-	                //blockoff = ( (9-( cPlayer->pl_cur_dir-28)) * SPRITE_SIZE);
-	                /*
-       		       switch(cPlayer->pl_cur_dir){
-		        	case DIR_350:
-		        		blockoff = 0;
-		        		break;
-		        	case DIR_340:
-		        		blockoff = JUMP_SIZE;
-		        		break;
-		        	case DIR_330:
-		        		blockoff = JUMP_SIZE;
-		        		break;
-		        	case DIR_320:
-		        		blockoff = JUMP_SIZE * 2;
-		        		break;
-		        	case DIR_310:
-		        		blockoff = JUMP_SIZE * 2;
-		        		break;
-		        	case DIR_300:
-		        		blockoff = JUMP_SIZE * 3;
-		        		break;
-		        	case DIR_290:
-		        		blockoff = JUMP_SIZE * 3;
-		        		break;
-		        	case DIR_280:
-		        		blockoff = JUMP_SIZE * 4;
-		        		break;		        
-		        };
-			*/
+	                cSprite->flipy = 0x0;	                
 	        }	        	        	        
 		
 		blockoff = JUMP_SIZE * (unsigned short)(jumpoff[cPlayer->pl_cur_dir - 1]);
@@ -1476,7 +1342,7 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 	
  	if((cPlayer->pl_cur_dir == DIR_45) || ( cPlayer->pl_cur_dir == DIR_135) || ( cPlayer->pl_cur_dir == DIR_225) || ( cPlayer->pl_cur_dir == DIR_315)){
  	
-                blockoff=10*SPRITE_SIZE;
+                blockoff= 10 * SPRITE_SIZE;
                         
 		switch( cPlayer->pl_cur_dir){
 		    case DIR_45:
@@ -1500,168 +1366,30 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 		}
 	} else {
 
-
 		if(( cPlayer->pl_cur_dir >= DIR_0) && ( cPlayer->pl_cur_dir <= DIR_90)){
 		
 			cSprite->flipx = 0x0;
-        	        cSprite->flipy = 0x0;
-        	        
-		        //blockoff = ( ( cPlayer->pl_cur_dir - 1 ) * SPRITE_SIZE);
-		        
-		        /*
-		        switch(cPlayer->pl_cur_dir){
-		        	case DIR_0:
-		        		blockoff = 0;
-		        		break;
-		        	case DIR_10:
-		        		blockoff = SPRITE_SIZE;
-		        		break;
-		        	case DIR_20:
-		        		blockoff = SPRITE_SIZE * 2;
-		        		break;
-		        	case DIR_30:
-		        		blockoff = SPRITE_SIZE * 3;
-		        		break;
-		        	case DIR_40:
-		        		blockoff = SPRITE_SIZE * 4;
-		        		break;
-		        	case DIR_50:
-		        		blockoff = SPRITE_SIZE * 5;
-		        		break;
-		        	case DIR_60:
-		        		blockoff = SPRITE_SIZE * 6;
-		        		break;
-		        	case DIR_70:
-		        		blockoff = SPRITE_SIZE * 7;
-		        		break;
-		        	case DIR_80:
-		        		blockoff = SPRITE_SIZE * 8;
-		        		break;
-		        	case DIR_90:
-		        		blockoff = SPRITE_SIZE * 9;
-		        		break;		        
-		        };
-		        */
-		        
+        	        cSprite->flipy = 0x0;        	        		        		        
 		} else
 
         	if(( cPlayer->pl_cur_dir > DIR_90) && ( cPlayer->pl_cur_dir <= DIR_180)){
         	        
         	        cSprite->flipx = 0x0;
-        	        cSprite->flipy = 0x2;
-        	        
-		        //blockoff = ( ( 9 - ( cPlayer->pl_cur_dir - 10 )) * SPRITE_SIZE);
-		        
-		       /*
-		       switch(cPlayer->pl_cur_dir){
-		        	case DIR_180:
-		        		blockoff = 0;
-		        		break;
-		        	case DIR_170:
-		        		blockoff = SPRITE_SIZE;
-		        		break;
-		        	case DIR_160:
-		        		blockoff = SPRITE_SIZE * 2;
-		        		break;
-		        	case DIR_150:
-		        		blockoff = SPRITE_SIZE * 3;
-		        		break;
-		        	case DIR_140:
-		        		blockoff = SPRITE_SIZE * 4;
-		        		break;
-		        	case DIR_130:
-		        		blockoff = SPRITE_SIZE * 5;
-		        		break;
-		        	case DIR_120:
-		        		blockoff = SPRITE_SIZE * 6;
-		        		break;
-		        	case DIR_110:
-		        		blockoff = SPRITE_SIZE * 7;
-		        		break;
-		        	case DIR_100:
-		        		blockoff = SPRITE_SIZE * 8;
-		        		break;		        
-		        };
-			*/
+        	        cSprite->flipy = 0x2;        	        
 	        } else
 
 	        if(( cPlayer->pl_cur_dir > DIR_180) && ( cPlayer->pl_cur_dir <= DIR_270)){
 
 	                cSprite->flipx = 0x1;
-	                cSprite->flipy = 0x2;
-	                
-	                //blockoff = ( (cPlayer->pl_cur_dir-19) * SPRITE_SIZE);
-	                
-	                /*
-		        switch(cPlayer->pl_cur_dir){
-		        	case DIR_190:
-		        		blockoff = SPRITE_SIZE;
-		        		break;
-		        	case DIR_200:
-		        		blockoff = SPRITE_SIZE * 2;
-		        		break;
-		        	case DIR_210:
-		        		blockoff = SPRITE_SIZE * 3;
-		        		break;
-		        	case DIR_220:
-		        		blockoff = SPRITE_SIZE * 4;
-		        		break;
-		        	case DIR_230:
-		        		blockoff = SPRITE_SIZE * 5;
-		        		break;
-		        	case DIR_240:
-		        		blockoff = SPRITE_SIZE * 6;
-		        		break;
-		        	case DIR_250:
-		        		blockoff = SPRITE_SIZE * 7;
-		        		break;
-		        	case DIR_260:
-		        		blockoff = SPRITE_SIZE * 8;
-		        		break;
-		        	case DIR_270:
-		        		blockoff = SPRITE_SIZE * 9;
-		        		break;		        
-		        };
-	                */
-
+	                cSprite->flipy = 0x2;	                
 	        } else
 
 	       	if( ( cPlayer->pl_cur_dir > DIR_270) &&  ( cPlayer->pl_cur_dir <= DIR_350) ){
 	                
 	                cSprite->flipx = 0x1;
-	                cSprite->flipy = 0x0;
-	                
-	                //blockoff = ( (9-( cPlayer->pl_cur_dir-28)) * SPRITE_SIZE);
-	                
-	                /*
-       		       switch(cPlayer->pl_cur_dir){
-		        	case DIR_350:
-		        		blockoff = SPRITE_SIZE;
-		        		break;
-		        	case DIR_340:
-		        		blockoff = SPRITE_SIZE * 2;
-		        		break;
-		        	case DIR_330:
-		        		blockoff = SPRITE_SIZE * 3;
-		        		break;
-		        	case DIR_320:
-		        		blockoff = SPRITE_SIZE * 4;
-		        		break;
-		        	case DIR_310:
-		        		blockoff = SPRITE_SIZE * 5;
-		        		break;
-		        	case DIR_300:
-		        		blockoff = SPRITE_SIZE * 6;
-		        		break;
-		        	case DIR_290:
-		        		blockoff = SPRITE_SIZE * 7;
-		        		break;
-		        	case DIR_280:
-		        		blockoff = SPRITE_SIZE * 8;
-		        		break;		        
-		        };
-			*/
+	                cSprite->flipy = 0x0;	                	                
 	        }
+	        
 	        blockoff = SPRITE_SIZE * (unsigned short)(caroff[cPlayer->pl_cur_dir - 1]); 	        	        
         }
         

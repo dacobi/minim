@@ -1,23 +1,33 @@
 #include "minim.h"
 #include "spritetab.h"
 
+#define LOAD_map 0x1F000
+#define LOAD_tile 0x1F800
+
+char mloadpath[9] = "dat/load";
+
+void load_load(){
+	loadVera(mloadpath, LOAD_map, 3);
+}
 
 void load_screen(){
 
-	char jj,ii;
+   //VERA.display.video = 1;
 
-	VERA.display.video = 1;
+   load_load();
 	
-	VERA.address_hi = VERA_INC_1 + 0x1; 
-	
-    	VERA.address = 0xB000;
+   VERA.display.hscale = 52;
+   VERA.display.vscale = 64;
 
-		 
-	for(jj = 0; jj < 60; jj++){
-	    for(ii = 0; ii < 80; ii++){	     	    
-			VERA.data0 = 'B';
-    	    }
-    	}
+
+   VERA.layer1.config = 0x08;
+   VERA.layer1.tilebase = (LOAD_tile >> 9);
+   VERA.layer1.mapbase = (LOAD_map >> 9);
+
+   VERA.layer1.hscroll = -3;
+   VERA.layer1.vscroll = -14;
+
+   VERA.display.video = 0x21;	
 }
 
 
@@ -3116,9 +3126,17 @@ void mblank(void){
 void load_level(){
 
    VERA.control = 0x80;
-   VERA.display.video = 0;
+   VERA.display.video = 1;
    reset_vera();
    VERA.control = 0x0;      
+  
+   SETPATHNUM(mpalpath, mGame.mLevel, MPALPOS);
+   
+   loadVera(mpalpath, VRAM_palette, 3); 
+   
+   load_screen();
+  
+  
    
    RAM_BANK = 1; 
    
@@ -3127,10 +3145,11 @@ void load_level(){
       
    RAM_BANK = 1; 
 
-   SETPATHNUM(mpalpath, mGame.mLevel, MPALPOS);
+ //  SETPATHNUM(mpalpath, mGame.mLevel, MPALPOS);
+ //  loadVera(mpalpath, VRAM_palette, 3); 
    
-   loadVera(mpalpath, VRAM_palette, 3); 
-   
+
+/*   
    VERA.display.hscale = 128;
    VERA.display.vscale = 128;
 
@@ -3150,6 +3169,7 @@ void load_level(){
      
    VERA.layer0.hscroll = 0;
    VERA.layer0.vscroll = 0;
+*/
 
    loadVera(mjumppath, mGame.mJumpAddr, 3);      	   
    
@@ -3181,6 +3201,33 @@ void load_level(){
     
    SETPATHNUM(mmbgpath, 1, MMBGPOS);    
    loadVera(mmbgpath, VRAM_layer0_map, 2);
+
+  /**/
+  
+     VERA.display.video = 0x01;
+  
+     VERA.display.hscale = 128;
+   VERA.display.vscale = 128;
+
+
+   VERA.layer1.config = 0xA3;
+   VERA.layer1.tilebase = (VRAM_tiles >> 9) +3;
+   VERA.layer1.mapbase = (VRAM_layer1_map >> 9);
+
+   VERA.layer1.hscroll = 0;
+   VERA.layer1.vscroll = 0;
+
+   VERA.layer0.config = 2;
+  
+   VERA.layer0.tilebase = (VRAM_tilesbg >> 9) +3;
+   VERA.layer0.mapbase = (VRAM_layer0_map >> 9);
+  
+     
+   VERA.layer0.hscroll = 0;
+   VERA.layer0.vscroll = 0;
+  
+  /**/
+	
 
    VERA.display.video = 0x71;
    
@@ -3731,14 +3778,22 @@ void load_menu(){
    int oi;
 
    VERA.control = 0x80;	
-   VERA.display.video = 0;
+   VERA.display.video = 1;
    reset_vera();
-   VERA.control = 0x0;      
-   
+   VERA.control = 0x0;
+      
    init_menulines();
     
    loadVera(mpalipath, VRAM_palette, 3); 
 
+   load_screen();
+     
+   loadVera(mintropath, VRAM_intro, 2);
+    
+   loadVera(mtxintpath, VRAM_texti, 3);
+   
+   VERA.display.video = 1;
+   
    VERA.layer0.hscroll = 0;
    VERA.layer0.vscroll = 0;
 
@@ -3752,10 +3807,7 @@ void load_menu(){
 
    VERA.layer0.config = 0;
    VERA.layer1.config = 7;
-  
-   loadVera(mintropath, VRAM_intro, 2);
-    
-   loadVera(mtxintpath, VRAM_texti, 3);
+
    
    VERA.layer1.tilebase = (VRAM_intro >> 9);// +3;
           
@@ -3848,13 +3900,15 @@ void load_wmenu(){
    int pchar;
 
    VERA.control = 0x80;	
-   VERA.display.video = 0;
+   VERA.display.video = 1;
    reset_vera();
    VERA.control = 0x0;      
-   
+         
    SETPATHNUM(mwpalpath, mGame.mWinner, MWPALPOS);
 
    loadVera(mwpalpath, VRAM_palette, 3);    
+   
+   load_screen();
    
    switch(mGame.mWinner){
 	case 1:
@@ -3871,6 +3925,7 @@ void load_wmenu(){
 		break;
    };
    
+   /*
    VERA.layer0.hscroll = 0;
    VERA.layer0.vscroll = 0;
 
@@ -3883,10 +3938,29 @@ void load_wmenu(){
 
    VERA.layer0.config = 0;
    VERA.layer1.config = 7;
+   */
   
    loadVera(mwinpath, VRAM_intro, 2);
     
    loadVera(mtxwnpath, VRAM_texti, 3);
+   
+   /**/
+   VERA.display.video = 0x01;		     
+   
+   VERA.layer0.hscroll = 0;
+   VERA.layer0.vscroll = 0;
+
+   VERA.layer1.hscroll = 0;
+   VERA.layer1.vscroll = 0;
+
+   
+   VERA.display.hscale = 64;
+   VERA.display.vscale = 64;
+
+   VERA.layer0.config = 0;
+   VERA.layer1.config = 7;
+   
+   /**/
    
    VERA.layer1.tilebase = (VRAM_intro >> 9);// +3;
    
@@ -4126,9 +4200,9 @@ void main(void) {
    set_keyboard_irq();
    
    VERA.irq_enable = 0;
-  
+     
    while(mGame.bRunning){
-        	
+	
 
 	load_menu();
 				
@@ -4144,7 +4218,7 @@ void main(void) {
    	
    	if(mGame.bRunning){
 		
-		VERA.display.video = 0;
+		VERA.display.video = 0;		
    
 		clear_sprites(1,70);
 		
@@ -4152,7 +4226,8 @@ void main(void) {
 	   	close_audio();     
 	   	
 	        VERA.irq_enable = 0;
-	        		     	        
+	        		     	
+			        		     		        		     	        
 		mScrollX = 0;
 		mScrollY = 0;
 

@@ -40,6 +40,45 @@ int main(){
 		obuffer.push_back(0xff);
 	}
 	
+	obuffer.push_back(0b00000001);
+	obuffer.push_back(0b00000011);		
+	obuffer.push_back(0b00000111);		
+	obuffer.push_back(0b00001111);							
+	obuffer.push_back(0b00011111);
+	obuffer.push_back(0b00111111);		
+	obuffer.push_back(0b01111111);		
+	obuffer.push_back(0b11111111);							
+
+	obuffer.push_back(0b10000000);
+	obuffer.push_back(0b11000000);		
+	obuffer.push_back(0b11100000);		
+	obuffer.push_back(0b11110000);							
+	obuffer.push_back(0b11111000);
+	obuffer.push_back(0b11111100);		
+	obuffer.push_back(0b11111110);		
+	obuffer.push_back(0b11111111);							
+
+	obuffer.push_back(0b11111111);
+	obuffer.push_back(0b01111111);		
+	obuffer.push_back(0b00111111);		
+	obuffer.push_back(0b00011111);							
+	obuffer.push_back(0b00001111);
+	obuffer.push_back(0b00000111);		
+	obuffer.push_back(0b00000011);		
+	obuffer.push_back(0b00000001);							
+
+	obuffer.push_back(0b11111111);
+	obuffer.push_back(0b11111110);		
+	obuffer.push_back(0b11111100);		
+	obuffer.push_back(0b11111000);							
+	obuffer.push_back(0b11110000);
+	obuffer.push_back(0b11100000);		
+	obuffer.push_back(0b11000000);		
+	obuffer.push_back(0b10000000);							
+
+
+
+	
 	outfile.write((char*)obuffer.data(),obuffer.size());
 	outfile.close();
 	

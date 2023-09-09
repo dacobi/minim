@@ -13,19 +13,21 @@ void load_load(){
 void load_screen(){
 
    //VERA.display.video = 1;
+   VERA.irq_enable = 1;
 
    load_load();
 	
-   VERA.display.hscale = 52;
-   VERA.display.vscale = 64;
-
-
    VERA.layer1.config = 0x08;
    VERA.layer1.tilebase = (LOAD_tile >> 9);
    VERA.layer1.mapbase = (LOAD_map >> 9);
 
-   VERA.layer1.hscroll = -3;
-   VERA.layer1.vscroll = -14;
+   VERA.layer1.hscroll = -2;
+   VERA.layer1.vscroll = -16;
+
+   VERA.display.hscale = 52;
+   VERA.display.vscale = 64;
+
+   waitvsync();
 
    VERA.display.video = 0x21;	
 }
@@ -3135,8 +3137,6 @@ void load_level(){
    loadVera(mpalpath, VRAM_palette, 3); 
    
    load_screen();
-  
-  
    
    RAM_BANK = 1; 
    
@@ -4200,7 +4200,7 @@ void main(void) {
    set_keyboard_irq();
    
    VERA.irq_enable = 0;
-     
+        
    while(mGame.bRunning){
 	
 

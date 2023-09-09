@@ -6,9 +6,6 @@ void load_load(){
 
 void load_screen(){
 
-   //VERA.display.video = 1;
-   VERA.irq_enable = 1;
-
    load_load();
    
    mLoadWait = MLOADDEL;
@@ -25,6 +22,7 @@ void load_screen(){
    VERA.display.hscale = 52;
    VERA.display.vscale = 64;
 
+   VERA.irq_enable = 1;
    bLoadScreen = 1;
    
    waitvsync();
@@ -3223,6 +3221,7 @@ void load_level(){
 
   /**/
   
+     bLoadScreen = 0;	
      VERA.display.video = 0x01;
   
      VERA.display.hscale = 128;
@@ -3247,8 +3246,6 @@ void load_level(){
   
   /**/
 	
-   bLoadScreen = 0;	
-
    VERA.display.video = 0x71;
    
    load_sprite(&mGame.PSprite1,1);
@@ -3802,7 +3799,7 @@ void load_menu(){
    reset_vera();
    VERA.control = 0x0;
       
-   init_menulines();
+//   init_menulines();
     
    loadVera(mpalipath, VRAM_palette, 3); 
 
@@ -3812,6 +3809,7 @@ void load_menu(){
     
    loadVera(mtxintpath, VRAM_texti, 3);
    
+   bLoadScreen = 0;
    VERA.display.video = 1;
    
    VERA.layer0.hscroll = 0;
@@ -3831,15 +3829,15 @@ void load_menu(){
    
    VERA.layer1.tilebase = (VRAM_intro >> 9);// +3;
           
+   init_menulines();	          
+          
    for(oi = 0; oi < 8; oi++){    
    	setMenuOffset(oi, 15);    	
         load_lmenu(oi);
    }
    
    load_audio(1);
-   
-   bLoadScreen = 0;
-    
+       
    VERA.display.video = 0x61;            
 }
 
@@ -3913,7 +3911,7 @@ void render_wmenu(){
 	
         mMenu.bWinnerRunning = 0;
 	
-	   VERA.display.video = 0x0;
+        VERA.display.video = 0x1;
 	
 }
 
@@ -3967,6 +3965,7 @@ void load_wmenu(){
    loadVera(mtxwnpath, VRAM_texti, 3);
    
    /**/
+   bLoadScreen = 0;
    VERA.display.video = 0x01;		     
    
    VERA.layer0.hscroll = 0;
@@ -3989,8 +3988,6 @@ void load_wmenu(){
    load_audio(2);
        	
    init_wtext(&mGame.mWText, pchar);
-   
-   bLoadScreen = 0;
    
    VERA.display.video = 0x61;		     
 }
@@ -4242,7 +4239,7 @@ void main(void) {
    	
    	if(mGame.bRunning){
 		
-		VERA.display.video = 0;		
+		VERA.display.video = 1;		
    
 		clear_sprites(1,70);
 		
@@ -4352,7 +4349,7 @@ void main(void) {
 		waitvsync();
 	
 		VERA.irq_enable = 0;
-		VERA.display.video = 0;
+		VERA.display.video = 1;
 
 		clear_sprites(1,10);
 		

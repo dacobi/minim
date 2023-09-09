@@ -6,6 +6,7 @@
 #include "atantab.h"
 #include "colmap.h"
 #include "randtab.h"
+#include "spritetab.h"
 
 char randidx;
 
@@ -52,6 +53,9 @@ char randidx;
 #define VERA_addr_bank 0x9F22
 
 #define VERA_data0        0x9F23
+
+#define LOAD_map 0x1F000
+#define LOAD_tile 0x1F800
 
 // VRAM ddresses
 #define VRAM_spraddr 	   0x1FC00
@@ -271,6 +275,8 @@ unsigned short mBankStack;
 char mNumbers[10] = "0123456789";
 
 #define SETPATHNUM(PATH, NUM, INDEX) PATH[INDEX] = mNumbers[NUM]
+
+char mloadpath[9] = "dat/load";
 
 char mgamepath[9] = "dat/game";
 
@@ -744,6 +750,18 @@ typedef struct Game {
 
 
 struct Game mGame;
+
+#define MLOADDEL 10
+
+char bLoadScreen;
+
+unsigned short mLoadWait;
+
+unsigned short mLoadPos;
+
+void load_load();
+
+void load_screen();
 
 void load_game(char clvl);
 

@@ -21,15 +21,7 @@ int main(){
 			obuffer.push_back(0x0);
 		} else {
 			obuffer.push_back(0xff);		
-		}
-		/*
-		obuffer.push_back(loadscreen[wi]);
-		if(loadscreen[wi] == 0){
-			obuffer.push_back(0x11);
-		} else {
-			obuffer.push_back(0x22);		
-		}*/
-
+		}		
 	}
 	
 	for(int wi = 0; wi < 8; wi++){

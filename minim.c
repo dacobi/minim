@@ -1,10 +1,4 @@
 #include "minim.h"
-#include "spritetab.h"
-
-#define LOAD_map 0x1F000
-#define LOAD_tile 0x1F800
-
-char mloadpath[9] = "dat/load";
 
 void load_load(){
 	loadVera(mloadpath, LOAD_map, 3);
@@ -16,6 +10,10 @@ void load_screen(){
    VERA.irq_enable = 1;
 
    load_load();
+   
+   mLoadWait = MLOADDEL;
+
+   mLoadPos = (32 * 14 * 2) + 2;
 	
    VERA.layer1.config = 0x08;
    VERA.layer1.tilebase = (LOAD_tile >> 9);
@@ -27,9 +25,11 @@ void load_screen(){
    VERA.display.hscale = 52;
    VERA.display.vscale = 64;
 
+   bLoadScreen = 1;
+   
    waitvsync();
-
-   VERA.display.video = 0x21;	
+   
+   VERA.display.video = 0x21;	   
 }
 
 
@@ -2933,6 +2933,8 @@ void render_cdmenu(){
 
 void init_game(){
 
+    bLoadScreen = 0;
+
     mGame.mLevels = get_game_levels();
 
     mGame.Joysticks[0] = &mGame.Joy1;
@@ -3023,6 +3025,23 @@ void maflow(void){
 void mblank(void){
 
 	char mL1, mL2;
+
+	if(bLoadScreen){
+		mLoadWait--;
+		
+		if(mLoadWait == 0){
+			mLoadWait = MLOADDEL;
+			VERA.control = 1;
+			VERA.address_hi = VERA_INC_1 + 1;
+			VERA.address = LOAD_map + mLoadPos;
+			VERA.data1 = 1;
+			VERA.data1 = 0xff;
+			VERA.control = 0;
+			mLoadPos += 4;
+		}
+		
+	
+	}
 
 	if(mMenu.bWinnerRunning){
 		if(mMenu.bDoUpdate){			
@@ -3228,6 +3247,7 @@ void load_level(){
   
   /**/
 	
+   bLoadScreen = 0;	
 
    VERA.display.video = 0x71;
    
@@ -3817,6 +3837,8 @@ void load_menu(){
    }
    
    load_audio(1);
+   
+   bLoadScreen = 0;
     
    VERA.display.video = 0x61;            
 }
@@ -3967,6 +3989,8 @@ void load_wmenu(){
    load_audio(2);
        	
    init_wtext(&mGame.mWText, pchar);
+   
+   bLoadScreen = 0;
    
    VERA.display.video = 0x61;		     
 }

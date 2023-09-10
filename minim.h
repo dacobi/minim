@@ -744,6 +744,12 @@ typedef struct Game {
    
    char bDoCol;
    char bGameRunning;
+   
+   char bLoadScreen;
+
+   char mProgressWait;
+
+   unsigned short mProgressBar;
     
 };
 
@@ -752,12 +758,6 @@ typedef struct Game {
 struct Game mGame;
 
 #define MLOADDEL 10
-
-char bLoadScreen;
-
-unsigned short mLoadWait;
-
-unsigned short mLoadPos;
 
 void load_load();
 

@@ -8,9 +8,9 @@ void load_screen(){
 
    load_load();
    
-   mLoadWait = MLOADDEL;
+   mGame.mProgressWait = MLOADDEL;
 
-   mLoadPos = (32 * 14 * 2) + 2;
+   mGame.mProgressBar = (32 * 14 * 2) + 2;
 	
    VERA.layer1.config = 0x08;
    VERA.layer1.tilebase = (LOAD_tile >> 9);
@@ -23,7 +23,7 @@ void load_screen(){
    VERA.display.vscale = 64;
 
    VERA.irq_enable = 1;
-   bLoadScreen = 1;
+   mGame.bLoadScreen = 1;
    
    waitvsync();
    
@@ -2931,7 +2931,7 @@ void render_cdmenu(){
 
 void init_game(){
 
-    bLoadScreen = 0;
+    mGame.bLoadScreen = 0;
 
     mGame.mLevels = get_game_levels();
 
@@ -3024,18 +3024,18 @@ void mblank(void){
 
 	char mL1, mL2;
 
-	if(bLoadScreen){
-		mLoadWait--;
+	if(mGame.bLoadScreen){
+		mGame.mProgressWait--;
 		
-		if(mLoadWait == 0){
-			mLoadWait = MLOADDEL;
+		if(mGame.mProgressWait == 0){
+			mGame.mProgressWait = MLOADDEL;
 			VERA.control = 1;
 			VERA.address_hi = VERA_INC_1 + 1;
-			VERA.address = LOAD_map + mLoadPos;
+			VERA.address = LOAD_map + mGame.mProgressBar;
 			VERA.data1 = 1;
 			VERA.data1 = 0xff;
 			VERA.control = 0;
-			mLoadPos += 4;
+			mGame.mProgressBar += 4;
 		}
 		
 	
@@ -3221,7 +3221,7 @@ void load_level(){
 
   /**/
   
-     bLoadScreen = 0;	
+     mGame.bLoadScreen = 0;	
      VERA.display.video = 0x01;
   
      VERA.display.hscale = 128;
@@ -3809,7 +3809,7 @@ void load_menu(){
     
    loadVera(mtxintpath, VRAM_texti, 3);
    
-   bLoadScreen = 0;
+   mGame.bLoadScreen = 0;
    VERA.display.video = 1;
    
    VERA.layer0.hscroll = 0;
@@ -3965,7 +3965,7 @@ void load_wmenu(){
    loadVera(mtxwnpath, VRAM_texti, 3);
    
    /**/
-   bLoadScreen = 0;
+   mGame.bLoadScreen = 0;
    VERA.display.video = 0x01;		     
    
    VERA.layer0.hscroll = 0;

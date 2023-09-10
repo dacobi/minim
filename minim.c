@@ -1255,10 +1255,11 @@ void set_boom_sprite(struct PSprite *cSprite, struct Player *cPlayer){
 
 void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
 	
+	unsigned char coff, cflip;
 	unsigned short blockoff;
 	
 	blockoff = 0;
-	
+	/*
 	 	if((cPlayer->pl_cur_dir == DIR_45) || ( cPlayer->pl_cur_dir == DIR_135) || ( cPlayer->pl_cur_dir == DIR_225) || ( cPlayer->pl_cur_dir == DIR_315)){
  	
                 blockoff=2 * JUMP_SIZE;
@@ -1309,9 +1310,17 @@ void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
 	                cSprite->flipx = 0x1;
 	                cSprite->flipy = 0x0;	                
 	        }	        	        	        
+	
+	*/
+		coff = jumpoff[cPlayer->pl_cur_dir - 1];
+	        cflip = coff >> 4;
+	        coff = coff & 0x0f;
+
+		cSprite->flipx = cflip & 0x1;
+                cSprite->flipy = cflip & 0x2;	                
 		
-		blockoff = JUMP_SIZE * (unsigned short)(jumpoff[cPlayer->pl_cur_dir - 1]);
-        }
+		blockoff = JUMP_SIZE * (unsigned short)coff; //(jumpoff[cPlayer->pl_cur_dir - 1]);
+        //}
         
         if(cPlayer->mJumpState % 2){
         	blockoff += JUMP_SIZE * 5;
@@ -1334,10 +1343,12 @@ void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
 
 void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 	
+	unsigned char coff, cflip;
 	unsigned short blockoff;
 	
 	blockoff = 0;
 	
+	/*
 	if(cPlayer->pl_cur_dir < DIR_0){
 	        mGame.bRacing = 0;   
                	mGame.mWinner = 1;     	
@@ -1347,8 +1358,8 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 	        mGame.bRacing = 0;   
                	mGame.mWinner = 2;     	
 	}
-	
-	
+	*/
+	/*
 	
  	if((cPlayer->pl_cur_dir == DIR_45) || ( cPlayer->pl_cur_dir == DIR_135) || ( cPlayer->pl_cur_dir == DIR_225) || ( cPlayer->pl_cur_dir == DIR_315)){
  	
@@ -1375,7 +1386,8 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 		
 		}
 	} else {
-
+*/
+		/*
 		if(( cPlayer->pl_cur_dir >= DIR_0) && ( cPlayer->pl_cur_dir <= DIR_90)){
 		
 			cSprite->flipx = 0x0;
@@ -1399,15 +1411,24 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 	                cSprite->flipx = 0x1;
 	                cSprite->flipy = 0x0;	                	                
 	        }
+	        */
 	        
-	        blockoff = SPRITE_SIZE * (unsigned short)(caroff[cPlayer->pl_cur_dir - 1]); 	        	        
-        }
+	        coff = caroff[cPlayer->pl_cur_dir - 1];
+	        cflip = coff >> 4;
+	        coff = coff & 0x0f;
+	        
+	        cSprite->flipx = cflip & 0x01;  //(caroff[cPlayer->pl_cur_dir - 1] >> 4) & 0x01;
+	        cSprite->flipy = cflip & 0x02; //(caroff[cPlayer->pl_cur_dir - 1] >> 4) & 0x02;
+	        
+	        blockoff = SPRITE_SIZE * (unsigned short)coff; //(caroff[cPlayer->pl_cur_dir - 1] & 0x0f); 	        	        
+   //     }
         
+        /*
         if(blockoff > (10 * SPRITE_SIZE)){
         	mGame.bRacing = 0;        	
         	mGame.mWinner = 3;
         }
-        
+        */
         /*
 
         if(blockoff < 0){

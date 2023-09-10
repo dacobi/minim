@@ -5,11 +5,12 @@
 #include <sstream>
 #include <fstream>
 
+#define LOAD_map 0x1F000
 #define VRAM_offset 0xA800
 #define CARS_size 5632
 #define BOOM_size 4096
 #define JUMP_size 20480
-#define TRTXT_size 4608
+#define TRTXT_size 5632
 
 int main(int argc, char *argv[]){
 
@@ -43,6 +44,11 @@ int main(int argc, char *argv[]){
 
 		conv >> tSize;
 		tSize -= 2;
+		
+		if((VRAM_offset + tSize + CARS_size + BOOM_size + JUMP_size + TRTXT_size) >= LOAD_map){
+			std::cout << "Error: VRAM Overflow in Track" << (ti+1) << std::endl;
+			return 1;
+		}
 
 		if((tSize + VRAM_offset) < 0x10000){
 			tSize = 0x10000 - VRAM_offset;

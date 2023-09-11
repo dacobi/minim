@@ -265,7 +265,7 @@ char randidx;
 #define MPLAYERS 3
 
 #define GAME_LEVELS 9
-#define MMAXWAYPOINTS 12
+#define MMAXWAYPOINTS 23
 
 unsigned short mBankStack;
 

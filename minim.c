@@ -989,6 +989,8 @@ void calc_way(){
 	cbm_k_ckout(3);
 	*/
 	
+	SETPATHNUM(mwaypath, mGame.mLevel, MWAYPOS);
+	
 	openFile(mwaypath, 3);
 	
 	wi = cbm_k_acptr();
@@ -1259,69 +1261,16 @@ void calc_jump_pos(struct PSprite *cSprite, struct Player *cPlayer){
 	unsigned short blockoff;
 	
 	blockoff = 0;
-	/*
-	 	if((cPlayer->pl_cur_dir == DIR_45) || ( cPlayer->pl_cur_dir == DIR_135) || ( cPlayer->pl_cur_dir == DIR_225) || ( cPlayer->pl_cur_dir == DIR_315)){
- 	
-                blockoff=2 * JUMP_SIZE;
-                        
-		switch( cPlayer->pl_cur_dir){
-		    case DIR_45:
-			cSprite->flipx = 0x0;
-	                cSprite->flipy = 0x0;
-		    break;
-                    case DIR_135:
-			cSprite->flipx = 0x0;
-	                cSprite->flipy = 0x2;
-                    break;
-                    case DIR_225:
-			cSprite->flipx = 0x1;
-	                cSprite->flipy = 0x2;
-                    break;
-                    case DIR_315:
-			cSprite->flipx = 0x1;
-	                cSprite->flipy = 0x0;
-                    break;
 
+	coff = jumpoff[cPlayer->pl_cur_dir - 1];
+        cflip = coff >> 4;
+        coff = coff & 0x0f;
+
+	cSprite->flipx = cflip & 0x1;
+        cSprite->flipy = cflip & 0x2;	                
 		
-		}
-	} else {
+	blockoff = JUMP_SIZE * (unsigned short)coff;
 
-
-		if(( cPlayer->pl_cur_dir >= DIR_0) && ( cPlayer->pl_cur_dir <= DIR_90)){
-		
-			cSprite->flipx = 0x0;
-        	        cSprite->flipy = 0x0;        	        
-		} else
-
-        	if(( cPlayer->pl_cur_dir > DIR_90) && ( cPlayer->pl_cur_dir <= DIR_180)){
-        	        
-        	        cSprite->flipx = 0x0;
-        	        cSprite->flipy = 0x2;        	        
-	        } else
-
-	        if(( cPlayer->pl_cur_dir > DIR_180) && ( cPlayer->pl_cur_dir <= DIR_270)){
-
-	                cSprite->flipx = 0x1;
-	                cSprite->flipy = 0x2;	                
-	        } else
-
-	       	if( ( cPlayer->pl_cur_dir > DIR_270) &&  ( cPlayer->pl_cur_dir <= DIR_350) ){
-	                
-	                cSprite->flipx = 0x1;
-	                cSprite->flipy = 0x0;	                
-	        }	        	        	        
-	
-	*/
-		coff = jumpoff[cPlayer->pl_cur_dir - 1];
-	        cflip = coff >> 4;
-	        coff = coff & 0x0f;
-
-		cSprite->flipx = cflip & 0x1;
-                cSprite->flipy = cflip & 0x2;	                
-		
-		blockoff = JUMP_SIZE * (unsigned short)coff; //(jumpoff[cPlayer->pl_cur_dir - 1]);
-        //}
-        
         if(cPlayer->mJumpState % 2){
         	blockoff += JUMP_SIZE * 5;
         }
@@ -1347,110 +1296,30 @@ void calc_sprite_pos(struct PSprite *cSprite, struct Player *cPlayer){
 	unsigned short blockoff;
 	
 	blockoff = 0;
-	
-	/*
-	if(cPlayer->pl_cur_dir < DIR_0){
-	        mGame.bRacing = 0;   
-               	mGame.mWinner = 1;     	
-	}
-
-	if(cPlayer->pl_cur_dir > DIR_315){
-	        mGame.bRacing = 0;   
-               	mGame.mWinner = 2;     	
-	}
-	*/
-	/*
-	
- 	if((cPlayer->pl_cur_dir == DIR_45) || ( cPlayer->pl_cur_dir == DIR_135) || ( cPlayer->pl_cur_dir == DIR_225) || ( cPlayer->pl_cur_dir == DIR_315)){
- 	
-                blockoff= 10 * SPRITE_SIZE;
-                        
-		switch( cPlayer->pl_cur_dir){
-		    case DIR_45:
-			cSprite->flipx = 0x0;
-	                cSprite->flipy = 0x0;
-		    break;
-                    case DIR_135:
-			cSprite->flipx = 0x0;
-	                cSprite->flipy = 0x2;
-                    break;
-                    case DIR_225:
-			cSprite->flipx = 0x1;
-	                cSprite->flipy = 0x2;
-                    break;
-                    case DIR_315:
-			cSprite->flipx = 0x1;
-	                cSprite->flipy = 0x0;
-                    break;
-
-		
-		}
-	} else {
-*/
-		/*
-		if(( cPlayer->pl_cur_dir >= DIR_0) && ( cPlayer->pl_cur_dir <= DIR_90)){
-		
-			cSprite->flipx = 0x0;
-        	        cSprite->flipy = 0x0;        	        		        		        
-		} else
-
-        	if(( cPlayer->pl_cur_dir > DIR_90) && ( cPlayer->pl_cur_dir <= DIR_180)){
-        	        
-        	        cSprite->flipx = 0x0;
-        	        cSprite->flipy = 0x2;        	        
-	        } else
-
-	        if(( cPlayer->pl_cur_dir > DIR_180) && ( cPlayer->pl_cur_dir <= DIR_270)){
-
-	                cSprite->flipx = 0x1;
-	                cSprite->flipy = 0x2;	                
-	        } else
-
-	       	if( ( cPlayer->pl_cur_dir > DIR_270) &&  ( cPlayer->pl_cur_dir <= DIR_350) ){
-	                
-	                cSprite->flipx = 0x1;
-	                cSprite->flipy = 0x0;	                	                
-	        }
-	        */
+		        
+	coff = caroff[cPlayer->pl_cur_dir - 1];
+	cflip = coff >> 4;
+	coff = coff & 0x0f;
 	        
-	        coff = caroff[cPlayer->pl_cur_dir - 1];
-	        cflip = coff >> 4;
-	        coff = coff & 0x0f;
+	cSprite->flipx = cflip & 0x01;
+	cSprite->flipy = cflip & 0x02;
 	        
-	        cSprite->flipx = cflip & 0x01;  //(caroff[cPlayer->pl_cur_dir - 1] >> 4) & 0x01;
-	        cSprite->flipy = cflip & 0x02; //(caroff[cPlayer->pl_cur_dir - 1] >> 4) & 0x02;
-	        
-	        blockoff = SPRITE_SIZE * (unsigned short)coff; //(caroff[cPlayer->pl_cur_dir - 1] & 0x0f); 	        	        
-   //     }
-        
-        /*
-        if(blockoff > (10 * SPRITE_SIZE)){
-        	mGame.bRacing = 0;        	
-        	mGame.mWinner = 3;
-        }
-        */
-        /*
+	blockoff = SPRITE_SIZE * (unsigned short)coff; 
 
-        if(blockoff < 0){
-        	mGame.bRacing = 0;        	
-        	mGame.mWinner = 4;
-        }
-        
-        */
 	
-    cSprite->dimensions = SPRITE_32_BY_32;
+    	cSprite->dimensions = SPRITE_32_BY_32;
 
-    cSprite->blocklo = mGame.mCarsLo + (SPRITE_BLOCKLO(blockoff) & 0x00ff); //SPRITE_BLOCKLO(VRAM_sprites+blockoff);
-    cSprite->blockhi = ((mGame.mCarsHi + SPRITE_BLOCKLO(blockoff)) >> 8) & 0x00ff;    
+    	cSprite->blocklo = mGame.mCarsLo + (SPRITE_BLOCKLO(blockoff) & 0x00ff); //SPRITE_BLOCKLO(VRAM_sprites+blockoff);
+    	cSprite->blockhi = ((mGame.mCarsHi + SPRITE_BLOCKLO(blockoff)) >> 8) & 0x00ff;    
     
-    cSprite->mPos.x = (320-16) + ( cPlayer->mPos.x - mGame.mViewport.x);
-    cSprite->mPos.y = (240-16) + ( cPlayer->mPos.y - mGame.mViewport.y);
+    	cSprite->mPos.x = (320-16) + ( cPlayer->mPos.x - mGame.mViewport.x);
+    	cSprite->mPos.y = (240-16) + ( cPlayer->mPos.y - mGame.mViewport.y);
     
-    if(cPlayer->mPlayer != mGame.mLeader->mPlayer){
-    	if( (cSprite->mPos.x < 0) || (cSprite->mPos.x > 608) || (cSprite->mPos.y < 0) || (cSprite->mPos.y > 448)){
-    		killPlayer(cPlayer);
-    	}    
-    }         	
+    	if(cPlayer->mPlayer != mGame.mLeader->mPlayer){
+    		if( (cSprite->mPos.x < 0) || (cSprite->mPos.x > 608) || (cSprite->mPos.y < 0) || (cSprite->mPos.y > 448)){
+    			killPlayer(cPlayer);
+	   	}    
+	}         	
 }
 
 void process_sprites(){

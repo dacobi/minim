@@ -881,9 +881,9 @@ char getDist(int dx, int dy);
 
 void process_physics();
 
-void process_bot(struct Player *cBot);
+//void process_bot(struct Player *cBot);
 
-void process_bots();
+//void process_bots();
 
 void swap_placements(char p1, char p2);
 

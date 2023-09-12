@@ -1471,9 +1471,10 @@ void process_physics(){
 }
 
 
+/*
 void process_bot(struct Player *cBot){
 	
-	int angle, diffa; //dist, 
+	int angle, diffa;
 	int dx,dy;
 	
 	cBot->mControl->mAccP = 1;
@@ -1497,29 +1498,19 @@ void process_bot(struct Player *cBot){
 
 	//dx = 152 - (cBot->mPos.x + 320 - 16);
 	//dy = 312 - (cBot->mPos.y + 240 - 16);
-
-	
-	//dist = distance(dx,dy);
-	
-
-
-	//angle = getangle(way_level1[cBot->mControl->mNextWay][0] - cBot->mPos.x, way_level1[cBot->mControl->mNextWay][1] - cBot->mPos.y);
 	
 	angle = getangle(-dx, dy);
 		
-	//diffa = (cBot->mDir - angle); 
 	diffa = getdelta(cBot->mDir,angle);
 
 	if(diffa < -5){
 		cBot->mControl->mLeft = 1;
-		cBot->mControl->mRight = 0;
-		//isdone = 1;
+		cBot->mControl->mRight = 0;		
 	}
 
 	if(diffa > 5){
 		cBot->mControl->mLeft = 0;
 		cBot->mControl->mRight = 1;
-		//isdone = 1;
 	}
 
 	if(dx < 0){
@@ -1530,36 +1521,11 @@ void process_bot(struct Player *cBot){
 	    dy = -dy;
 	}
 
-
-	//dist = dx+dy;
-
-	check_waypoint(cBot, dx, dy);
-
-	/*
-	if(getDist(dx, dy)){
-//	if((dx < 32) && (dy <32)){
-		//isdone = 1;
-		if(cBot->mControl->mNextWay == (mGame.mWaypointNum-1)){
-			cBot->mControl->mNextWay = 0;
-			cBot->bCheckFinish = 1;	
-		} else {
-			cBot->mControl->mNextWay++;
-		}				
-	} else {
-		if(getWayState(mGame.mWaypoints[cBot->mControl->mNextWay].c, cBot->mPos.x, cBot->mPos.y, mGame.mWaypoints[cBot->mControl->mNextWay].x, mGame.mWaypoints[cBot->mControl->mNextWay].y)){
-		if(cBot->mControl->mNextWay == (mGame.mWaypointNum-1)){
-			cBot->mControl->mNextWay = 0;
-			cBot->bCheckFinish = 1;	
-		} else {
-			cBot->mControl->mNextWay++;
-		}				
-
-		}
-	}
-	*/
-
+	check_waypoint(cBot, dx, dy);	
 }
+*/
 
+/*
 void process_bots(){
 
 	if(mGame.Player1.mControl->bIsBot > 0){
@@ -1574,13 +1540,14 @@ void process_bots(){
 		process_bot(&mGame.Player3);
 	}
 
-/*
+
 	if(mGame.Player4.mControl->bIsBot > 0){
 		process_bot(&mGame.Player4);
-	} */
+	} 
 
 
 }
+*/
 
 void killPlayer(struct Player *cPlayer){
 
@@ -1693,22 +1660,36 @@ void check_waypoint(struct Player *cPlayer, unsigned short dx,  unsigned short d
 
 void process_player(struct Player *cPlayer){
 	
-	//int dist;
 	int dx,dy,cindex;
 	unsigned char cval;
-	unsigned char cflip;	
-//	char mDebug;
-//	char bDebug;	
-//	unsigned char* colmap;
+	unsigned char cflip;		
+	int angle, diffa;
 	
-//	mDebug = 0;
-//	bDebug = 0;	
 	
-	if(cPlayer->mControl->bIsBot == 0){
-	
-		dx = (cPlayer->mPos.x ) - (mGame.mWaypoints[cPlayer->mControl->mNextWay].x);// - 320 - 16);
-	        dy = (cPlayer->mPos.y ) - (mGame.mWaypoints[cPlayer->mControl->mNextWay].y);// - 240 - 16) ;
+	dx = (cPlayer->mPos.x ) - (mGame.mWaypoints[cPlayer->mControl->mNextWay].x);// - 320 - 16);
+        dy = (cPlayer->mPos.y ) - (mGame.mWaypoints[cPlayer->mControl->mNextWay].y);// - 240 - 16) ;
 
+	if(cPlayer->mControl->bIsBot == 1){
+	
+		cPlayer->mControl->mAccP = 1;
+		cPlayer->mControl->mLeft = 0;
+		cPlayer->mControl->mRight = 0;
+		
+		angle = getangle(-dx, dy);
+			
+		diffa = getdelta(cPlayer->mDir,angle);
+
+		if(diffa < -5){
+			cPlayer->mControl->mLeft = 1;
+			cPlayer->mControl->mRight = 0;		
+		}
+
+		if(diffa > 5){
+			cPlayer->mControl->mLeft = 0;
+			cPlayer->mControl->mRight = 1;
+		}
+	
+	/*
 		if(dx < 0){
 		    dx = -dx;
 		}
@@ -1717,12 +1698,26 @@ void process_player(struct Player *cPlayer){
 		    dy = -dy;
 		}
 
-
-		//dist = dx+dy;
-
 		check_waypoint(cPlayer, dx, dy);
-		
+	*/
+	
 	}
+		// else {
+	
+		//dx = (cPlayer->mPos.x ) - (mGame.mWaypoints[cPlayer->mControl->mNextWay].x);// - 320 - 16);
+	        //dy = (cPlayer->mPos.y ) - (mGame.mWaypoints[cPlayer->mControl->mNextWay].y);// - 240 - 16) ;
+
+	if(dx < 0){
+	    dx = -dx;
+	}
+	
+	if(dy < 0){
+	    dy = -dy;
+	}
+
+	check_waypoint(cPlayer, dx, dy);
+		
+	//}
 /*
 #ifdef MDEBUG	
 	if(mGame.bDebug){
@@ -4286,7 +4281,7 @@ void main(void) {
 				
    		process_input();
 
-		process_bots();
+		//process_bots();
 		process_players();	
 		 
 		clear_controls();	 

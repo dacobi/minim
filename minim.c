@@ -1613,8 +1613,29 @@ char getDist(int dx, int dy){
 }
 
 void check_waypoint(struct Player *cPlayer, unsigned short dx,  unsigned short dy){
+	
 	if(getDist(dx, dy)){
-			if(cPlayer->mControl->mNextWay == (mGame.mWaypointNum-1)){				
+		if(cPlayer->mControl->mNextWay == (mGame.mWaypointNum-1)){				
+			cPlayer->mControl->mNextWay = 0;
+			cPlayer->bCheckFinish = 1;
+
+		} else {
+			cPlayer->mControl->mNextWay++;
+		}
+			
+		//Waypoint debug
+		#ifdef MDEBUG	
+		if(cPlayer->mPlayer == 1){
+			mGame.PSprite1.palette_offset++;
+			if(mGame.PSprite1.palette_offset > 15){
+				mGame.PSprite1.palette_offset = 0;
+			}
+		}
+		#endif
+			
+	} else {
+		if(getWayState(mGame.mWaypoints[cPlayer->mControl->mNextWay].c, cPlayer->mPos.x, cPlayer->mPos.y, mGame.mWaypoints[cPlayer->mControl->mNextWay].x, mGame.mWaypoints[cPlayer->mControl->mNextWay].y)){
+			if(cPlayer->mControl->mNextWay == (mGame.mWaypointNum-1)){
 				cPlayer->mControl->mNextWay = 0;
 				cPlayer->bCheckFinish = 1;
 
@@ -1632,30 +1653,9 @@ void check_waypoint(struct Player *cPlayer, unsigned short dx,  unsigned short d
 				}
 			}
 			#endif
-			
-		} else {
-			if(getWayState(mGame.mWaypoints[cPlayer->mControl->mNextWay].c, cPlayer->mPos.x, cPlayer->mPos.y, mGame.mWaypoints[cPlayer->mControl->mNextWay].x, mGame.mWaypoints[cPlayer->mControl->mNextWay].y)){
-				if(cPlayer->mControl->mNextWay == (mGame.mWaypointNum-1)){
-					cPlayer->mControl->mNextWay = 0;
-					cPlayer->bCheckFinish = 1;
 
-				} else {
-					cPlayer->mControl->mNextWay++;
-
-				}
-			
-				//Waypoint debug
-				#ifdef MDEBUG	
-				if(cPlayer->mPlayer == 1){
-					mGame.PSprite1.palette_offset++;
-					if(mGame.PSprite1.palette_offset > 15){
-						mGame.PSprite1.palette_offset = 0;
-					}
-				}
-				#endif
-
-			}
 		}
+	}
 }
 
 void process_player(struct Player *cPlayer){
@@ -1664,10 +1664,9 @@ void process_player(struct Player *cPlayer){
 	unsigned char cval;
 	unsigned char cflip;		
 	int angle, diffa;
-	
-	
-	dx = (cPlayer->mPos.x ) - (mGame.mWaypoints[cPlayer->mControl->mNextWay].x);// - 320 - 16);
-        dy = (cPlayer->mPos.y ) - (mGame.mWaypoints[cPlayer->mControl->mNextWay].y);// - 240 - 16) ;
+		
+	dx = cPlayer->mPos.x - mGame.mWaypoints[cPlayer->mControl->mNextWay].x;
+        dy = cPlayer->mPos.y - mGame.mWaypoints[cPlayer->mControl->mNextWay].y;
 
 	if(cPlayer->mControl->bIsBot == 1){
 	
@@ -1687,25 +1686,8 @@ void process_player(struct Player *cPlayer){
 		if(diffa > 5){
 			cPlayer->mControl->mLeft = 0;
 			cPlayer->mControl->mRight = 1;
-		}
-	
-	/*
-		if(dx < 0){
-		    dx = -dx;
-		}
-	
-		if(dy < 0){
-		    dy = -dy;
-		}
-
-		check_waypoint(cPlayer, dx, dy);
-	*/
-	
+		}		
 	}
-		// else {
-	
-		//dx = (cPlayer->mPos.x ) - (mGame.mWaypoints[cPlayer->mControl->mNextWay].x);// - 320 - 16);
-	        //dy = (cPlayer->mPos.y ) - (mGame.mWaypoints[cPlayer->mControl->mNextWay].y);// - 240 - 16) ;
 
 	if(dx < 0){
 	    dx = -dx;
@@ -1758,7 +1740,7 @@ void process_player(struct Player *cPlayer){
 	}
 	
 
-		cindex = GETINDEX(cPlayer->mPos.x, cPlayer->mPos.y); //, &cmod);
+		cindex = GETINDEX(cPlayer->mPos.x, cPlayer->mPos.y);
 	
 		if(cindex > 8191){
 			RAM_BANK = 2;
@@ -1778,7 +1760,8 @@ void process_player(struct Player *cPlayer){
 				cPlayer->mOutCount--;
 
 				if(cPlayer->mOutCount < 1){						
-					killPlayer(cPlayer);								
+					killPlayer(cPlayer);
+					return;								
 				} else if(cPlayer->mOutCount < MOUTLOOSE){				
 					cPlayer->bIsValid = 0;					
 				}
@@ -4281,7 +4264,6 @@ void main(void) {
 				
    		process_input();
 
-		//process_bots();
 		process_players();	
 		 
 		clear_controls();	 

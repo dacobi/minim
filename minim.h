@@ -347,6 +347,7 @@ extern void rm_keyboard_irq();
 #define MTRACKOUTSIDE 0x0
 #define MTRACKJUMPR 0x16
 #define MTRACKJUMPL 0x19
+#define MTRACKBOOM 0x10
 
 #define MSPEEDMAX 80
 #define MSPEEDMAXONEDGE 65
@@ -628,12 +629,13 @@ typedef struct Game {
    char mWinner;
    
    char bFrameReady;
-   
+
+/*   
 #ifdef MDEBUG   
    char bDebug;   
    struct PSprite mDebug[MMAXWAYPOINTS];
 #endif   
-   
+*/
    signed char mAISpeed;	
    
    unsigned short mCarsAddr;
@@ -767,6 +769,7 @@ void load_game(char clvl);
 
 char get_game_levels();
 
+/*
 #ifdef MDEBUG   
 
 void init_debug();
@@ -776,6 +779,7 @@ void process_debug();
 void load_debug();
 
 #endif
+*/
 
 void setTextSprite(struct PSprite* cMenu, int cChar, int mx, int my);
 
@@ -893,7 +897,9 @@ void swap_dist(char p1, char p2);
 
 void sort_dist();
 
-void checkWay(struct Player *cPlayer);
+void update_waypoint(struct Player *cPlayer);
+
+void check_waypoint(struct Player *cPlayer, unsigned short dx,  unsigned short dy);
 
 void setPlayerPlace(struct Player *cPlayer);
 

@@ -1364,12 +1364,13 @@ void process_sprites(){
 		
 	}
 
+/*
 #ifdef MDEBUG	
 	if(mGame.bDebug){
 		process_debug();	
 	}
 #endif	
-	
+*/	
 	
 	/*
 	if(mGame.Player4.bIsVisible){
@@ -1532,6 +1533,9 @@ void process_bot(struct Player *cBot){
 
 	//dist = dx+dy;
 
+	check_waypoint(cBot, dx, dy);
+
+	/*
 	if(getDist(dx, dy)){
 //	if((dx < 32) && (dy <32)){
 		//isdone = 1;
@@ -1552,6 +1556,7 @@ void process_bot(struct Player *cBot){
 
 		}
 	}
+	*/
 
 }
 
@@ -1640,18 +1645,64 @@ char getDist(int dx, int dy){
 	return 0;
 }
 
+void check_waypoint(struct Player *cPlayer, unsigned short dx,  unsigned short dy){
+	if(getDist(dx, dy)){
+			if(cPlayer->mControl->mNextWay == (mGame.mWaypointNum-1)){				
+				cPlayer->mControl->mNextWay = 0;
+				cPlayer->bCheckFinish = 1;
+
+			} else {
+				cPlayer->mControl->mNextWay++;
+
+			}
+			
+			//Waypoint debug
+			#ifdef MDEBUG	
+			if(cPlayer->mPlayer == 1){
+				mGame.PSprite1.palette_offset++;
+				if(mGame.PSprite1.palette_offset > 15){
+					mGame.PSprite1.palette_offset = 0;
+				}
+			}
+			#endif
+			
+		} else {
+			if(getWayState(mGame.mWaypoints[cPlayer->mControl->mNextWay].c, cPlayer->mPos.x, cPlayer->mPos.y, mGame.mWaypoints[cPlayer->mControl->mNextWay].x, mGame.mWaypoints[cPlayer->mControl->mNextWay].y)){
+				if(cPlayer->mControl->mNextWay == (mGame.mWaypointNum-1)){
+					cPlayer->mControl->mNextWay = 0;
+					cPlayer->bCheckFinish = 1;
+
+				} else {
+					cPlayer->mControl->mNextWay++;
+
+				}
+			
+				//Waypoint debug
+				#ifdef MDEBUG	
+				if(cPlayer->mPlayer == 1){
+					mGame.PSprite1.palette_offset++;
+					if(mGame.PSprite1.palette_offset > 15){
+						mGame.PSprite1.palette_offset = 0;
+					}
+				}
+				#endif
+
+			}
+		}
+}
+
 void process_player(struct Player *cPlayer){
 	
 	//int dist;
 	int dx,dy,cindex;
 	unsigned char cval;
 	unsigned char cflip;	
-	char mDebug;
-	char bDebug;	
+//	char mDebug;
+//	char bDebug;	
 //	unsigned char* colmap;
 	
-	mDebug = 0;
-	bDebug = 0;	
+//	mDebug = 0;
+//	bDebug = 0;	
 	
 	if(cPlayer->mControl->bIsBot == 0){
 	
@@ -1669,40 +1720,10 @@ void process_player(struct Player *cPlayer){
 
 		//dist = dx+dy;
 
+		check_waypoint(cPlayer, dx, dy);
 		
-		if(getDist(dx, dy)){
-			if(cPlayer->mControl->mNextWay == (mGame.mWaypointNum-1)){
-				mDebug = cPlayer->mControl->mNextWay;
-				bDebug = 1;
-				cPlayer->mControl->mNextWay = 0;
-				cPlayer->bCheckFinish = 1;
-
-			} else {
-				mDebug = cPlayer->mControl->mNextWay;			
-				bDebug = 1;				
-				cPlayer->mControl->mNextWay++;
-
-			}				
-		} else {
-			if(getWayState(mGame.mWaypoints[cPlayer->mControl->mNextWay].c, cPlayer->mPos.x, cPlayer->mPos.y, mGame.mWaypoints[cPlayer->mControl->mNextWay].x, mGame.mWaypoints[cPlayer->mControl->mNextWay].y)){
-				if(cPlayer->mControl->mNextWay == (mGame.mWaypointNum-1)){
-					mDebug = cPlayer->mControl->mNextWay;				
-					bDebug = 1;					
-					cPlayer->mControl->mNextWay = 0;
-					cPlayer->bCheckFinish = 1;
-
-				} else {
-					mDebug = cPlayer->mControl->mNextWay;
-					bDebug = 1;					
-					cPlayer->mControl->mNextWay++;
-
-				}				
-
-			}
-		}
-
 	}
-
+/*
 #ifdef MDEBUG	
 	if(mGame.bDebug){
 		if(cPlayer->mPlayer == 1){
@@ -1712,6 +1733,7 @@ void process_player(struct Player *cPlayer){
 		}
 	}
 #endif	
+*/
 	
 	if(cPlayer->bCheckFinish){
 		if(cPlayer->mPos.y < mGame.mFinishLine){
@@ -1765,19 +1787,34 @@ void process_player(struct Player *cPlayer){
 				} else if(cPlayer->mOutCount < MOUTLOOSE){				
 					cPlayer->bIsValid = 0;					
 				}
+				
+				if(cPlayer->bAirBorn == 0){
+					cPlayer->mMaxX = MSPEEDMAXOUTSIDE;
+				}
+
 								
 			} else {
 				cPlayer->bIsOutside = 1;
 				cPlayer->mOutCount = MOUTKILL;
-				cPlayer->mMaxX = MSPEEDMAXOUTSIDE;
+				if(cPlayer->bAirBorn == 0){
+					cPlayer->mMaxX = MSPEEDMAXOUTSIDE;
+				}
 			}			
 			cPlayer->mEngine.mRevTime = 0;				
-		} else {			
+		} else {		
+			if(cval == MTRACKBOOM){
+				if(cPlayer->bAirBorn == 0){
+					killPlayer(cPlayer);
+					return;	
+				}
+			}
+			
+			
 			if(cPlayer->bIsOutside > 0){
 				cPlayer->bIsOutside = 0;	
 				cPlayer->bIsValid = 1;	
 				cPlayer->mOutCount = MOUTKILL;
-				checkWay(cPlayer);
+				update_waypoint(cPlayer);
 			}
 			
 			if(cval == MTRACKONEDGE){
@@ -1880,11 +1917,11 @@ void sort_dist(){
 }
 
 
-void checkWay(struct Player *cPlayer){
+void update_waypoint(struct Player *cPlayer){
 
 	int dx, dy;
-	unsigned int sx,sy;
-	char wi, nextw;
+	unsigned int sx,sy, cDist1, cDist2;
+	char wi, nextw, cWay1, cWay2;	
 	
 	nextw = cPlayer->mControl->mNextWay;
 	
@@ -1913,8 +1950,59 @@ void checkWay(struct Player *cPlayer){
 	}
 	
 	sort_dist();
+	
+	cWay1 = nextw;
+	
+	nextw++;
+		
+	if(nextw == mGame.mWaypointNum){
+		nextw = 0;
+	}	
+	
+	cWay2 = nextw;	
+	
+	dx = (cPlayer->mPos.x - mGame.mWaypoints[cWay1].x);
+	dy = (cPlayer->mPos.y - mGame.mWaypoints[cWay1].y);	
+	
+	if(dx < 0){sx = -dx;} else {sx = dx;}
+	if(dy < 0){sy = -dy;} else {sy = dy;}
+	
+	sx = sx >> 3;
+	sy = sy >> 3;
+	
+	if(sx > 181){sx = 181;}
+	if(sy > 181){sy = 181;}	
 
-	cPlayer->mControl->mNextWay = mGame.mWayDistSort[0]->mPlayer;
+
+	cDist1 = (sx * sx) + (sy * sy);
+
+
+	dx = (cPlayer->mPos.x - mGame.mWaypoints[cWay2].x);
+	dy = (cPlayer->mPos.y - mGame.mWaypoints[cWay2].y);	
+	
+	if(dx < 0){sx = -dx;} else {sx = dx;}
+	if(dy < 0){sy = -dy;} else {sy = dy;}
+	
+	sx = sx >> 3;
+	sy = sy >> 3;
+	
+	if(sx > 181){sx = 181;}
+	if(sy > 181){sy = 181;}	
+
+
+	cDist2 = (sx * sx) + (sy * sy);
+
+	if(cDist2 < cDist1){
+		cWay1 = cWay2;
+		cDist1 = cDist2;		
+	}
+	
+	if(cDist1 < mGame.mWayDistSort[0]->mPFactor){
+		cPlayer->mControl->mNextWay = cWay1;		
+	} else {
+		cPlayer->mControl->mNextWay = mGame.mWayDistSort[0]->mPlayer;
+	}
+
 }
 
 
@@ -2455,7 +2543,7 @@ void process_engine(struct SThrottle* cEngine, int mvel){
 		mrand = mrand >> 2;
 		
 		if(mvel == 0){
-			mrand = mrand >> 2;
+			mrand = mrand >> 1;
 		}
 		
 		cEngine->mRevTime = mrand;
@@ -2720,15 +2808,27 @@ void process_sound(){
 	}
 	
 	if(mGame.Player1.mEngine.mOn){
-		process_engine(&mGame.Player1.mEngine, mGame.Player1.mVel);
+		if(mGame.Player1.bFinished == 1){
+			process_engine(&mGame.Player1.mEngine, 0);
+		} else { 		
+			process_engine(&mGame.Player1.mEngine, mGame.Player1.mVel);
+		}
 	}
 
 	if(mGame.Player2.mEngine.mOn){
-		process_engine(&mGame.Player2.mEngine, mGame.Player2.mVel);
+		if(mGame.Player2.bFinished == 1){
+			process_engine(&mGame.Player2.mEngine, 0);		
+		} else { 						
+			process_engine(&mGame.Player2.mEngine, mGame.Player2.mVel);
+		}
 	}
 
 	if(mGame.Player3.mEngine.mOn){
-		process_engine(&mGame.Player3.mEngine, mGame.Player3.mVel);
+		if(mGame.Player3.bFinished == 1){
+			process_engine(&mGame.Player3.mEngine, 0);		
+		} else {
+			process_engine(&mGame.Player3.mEngine, mGame.Player3.mVel);
+		}
 	}
 
 	/*
@@ -3014,11 +3114,13 @@ void mblank(void){
 			load_psprites();
 			
 			mGame.bFrameReady = 0;				
+/*
 #ifdef MDEBUG		
 			if(mGame.bDebug){
 				load_debug();	
 			}
 #endif
+*/
 		}
 		
 	}	
@@ -3882,6 +3984,7 @@ void load_wmenu(){
    VERA.display.video = 0x61;		     
 }
 
+/*
 #ifdef MDEBUG   
 
 void init_debug(){
@@ -3929,6 +4032,7 @@ void load_debug(){
 }
 
 #endif
+*/
 
 void setup_race(){
    char cplc, botc;
@@ -3999,7 +4103,8 @@ void setup_race(){
    set_text_sprite(&mGame.mLapsCount[4], mGame.mTXTLapsHi, mGame.mTXTLapsLo, SPRITE_32_BY_32, 0, (mGame.mLaps - 1) * TEXTISIZET, MLAPSCOUNTX + (MLAPSCOUNTSPACE >> 1) + (MLAPSCOUNTSPACE * 4), MLAPSCOUNTY);
    
    calc_way();
-   
+  
+/* 
 #ifdef MDEBUG      
 
    mGame.mLevel = 1;
@@ -4012,6 +4117,7 @@ void setup_race(){
    }
    
 #endif   
+*/
    
    mGame.mPlace = 1;
    mGame.mPCount = 3;

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+function make_track() {
+	local FOLDER=$1
+	local TRACKNUM=${FOLDER:0-1}
+	
+	cp $FOLDER/tiles.bin DAT/TLST$TRACKNUM
+	cp $FOLDER/map0.bin DAT/TRK$TRACKNUM
+	cp $FOLDER/colmap0.bin DAT/CLM$TRACKNUM
+	cp $FOLDER/pal.bin DAT/PAL$TRACKNUM
+
+	./tools/waypoints tools/waypoint.t$TRACKNUM
+
+	cp ./tools/waypoint.t$TRACKNUM.bin DAT/WAY$TRACKNUM	
+}
+
+function get_tls() {
+	local TILES=$1
+	echo $(/bin/ls -l $TILES | awk '{print $5}')
+}
+
+make_track "assets/tilemaped/tracks/final/t1"
+make_track "assets/tilemaped/tracks/final/t2"
+
+./tools/gameaddr $(get_tls DAT/TLST1) $(get_tls DAT/TLST2)
+
+cp ./tools/game.bin DAT/GAME

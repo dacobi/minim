@@ -51,4 +51,13 @@ Write-Output $tilessize
 
 }
 
-make_track -Track "t1"
+Get-ChildItem –Path $tracks
+
+|
+
+Foreach-Object {
+
+make_track -Track $_.Name
+
+}
+

@@ -47,15 +47,15 @@ $curpath = "DAT\TLST" + $tracknum
 
 $tilessize = $tilessize + " " + $(get_tls -Tiles $curpath)
 
-Write-Output $tilessize
-
 }
 
 Get-ChildItem -Path "$tracks" | Foreach-Object { make_track -Track $_.Name }
 
+Write-Output $tilessize
+
 $curfile = "tools\gameaddr.exe"
 
-Invoke-Expression "$curfile $tilessize"
+Invoke-Expression "$curfile &'$tilessize'"
 
 $curfile = "tools\game.bin"
 $curpath = "DAT\GAME"

@@ -1,5 +1,5 @@
 $tracks = 'assets\tilemaped\tracks\final'
-$tilessize = ''
+$globale:tilessize = ''
 
 function get_tls{
 param([String]$Tiles)
@@ -45,17 +45,17 @@ Copy-Item -Path $curfile -Destination $curpath
 
 $curpath = "DAT\TLST" + $tracknum
 
-$tilessize = $tilessize + " " + $(get_tls -Tiles $curpath)
+$globale:tilessize = $globale:tilessize + " " + $(get_tls -Tiles $curpath)
 
 }
 
 Get-ChildItem -Path "$tracks" | Foreach-Object { make_track -Track $_.Name }
 
-Write-Output $tilessize
+Write-Output $globale:tilessize
 
 $curfile = "tools\gameaddr.exe"
 
-Invoke-Expression "$curfile &'$tilessize'"
+Invoke-Expression "$curfile $globale:tilessize"
 
 $curfile = "tools\game.bin"
 $curpath = "DAT\GAME"

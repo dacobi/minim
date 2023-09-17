@@ -1,6 +1,12 @@
 $tracks = 'assets\tilemaped\tracks\final'
 $tilessize = ''
 
+function get_tls{
+param([String]$Tiles)
+	
+	return (Get-Item -Path $tiles).Length
+}
+
 function make_track{
 param([String]$Track)
 
@@ -30,13 +36,16 @@ Copy-Item -Path $curfile -Destination $curpath
 $curpath = "tools\waypoint.t" + $tracknum
 $curfile = "tools\waypoints.exe"
 
-
 Invoke-Expression "$curfile $curpath"
 
 $curfile = "tools\waypoint.t" + $tracknum + ".bin"
 $curpath = "DAT\WAY" + $tracknum
 
 Copy-Item -Path $curfile -Destination $curpath
+
+$curpath = "DAT\TLST" + $tracknum
+
+$tilessize = $tilessize + " " + $(get_tls -Tiles $curpath)
 
 }
 

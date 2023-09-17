@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TRACKS="assets/tilemaped/tracks/final"
-TILES=""
+TILESSIZE=""
 
 function make_track() {
 	local FOLDER=$TRACKS/$1
@@ -16,7 +16,7 @@ function make_track() {
 
 	cp ./tools/waypoint.t$TRACKNUM.bin DAT/WAY$TRACKNUM
 
-	TILES="$TILES $(get_tls DAT/TLST$TRACKNUM)"
+	TILESSIZE="$TILESSIZE $(get_tls DAT/TLST$TRACKNUM)"
 }
 
 function get_tls() {
@@ -24,15 +24,11 @@ function get_tls() {
 	echo $(/bin/ls -l $TILES | awk '{print $5}')
 }
 
-#make_track "assets/tilemaped/tracks/final/t1"
-#make_track "assets/tilemaped/tracks/final/t2"
-
 for t in $(ls $TRACKS)
 do
 	make_track $t
 done
 
-./tools/gameaddr $TILES
-#./tools/gameaddr $(get_tls DAT/TLST1) $(get_tls DAT/TLST2)
+./tools/gameaddr $TILESSIZE
 
 cp ./tools/game.bin DAT/GAME

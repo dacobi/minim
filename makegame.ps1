@@ -53,3 +53,11 @@ Write-Output $tilessize
 
 Get-ChildItem -Path "$tracks" | Foreach-Object { make_track -Track $_.Name }
 
+$curfile = "tools\gameaddr.exe"
+
+Invoke-Expression "$curfile $tilessize"
+
+$curfile = "tools\game.bin"
+$curpath = "DAT\GAME"
+
+Copy-Item -Path $curfile -Destination $curpath

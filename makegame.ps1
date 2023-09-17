@@ -40,4 +40,4 @@ Copy-Item -Path $curfile -Destination $curpath
 
 }
 
-make_track -Track "t2"
+make_track -Track "t1"

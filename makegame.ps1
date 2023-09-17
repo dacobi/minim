@@ -51,7 +51,7 @@ Write-Output $tilessize
 
 }
 
-Get-ChildItem –Path $tracks
+Get-ChildItem -Path "$tracks"
 
 |
 

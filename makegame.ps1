@@ -47,6 +47,8 @@ $curpath = "DAT\TLST" + $tracknum
 
 $tilessize = $tilessize + " " + $(get_tls -Tiles $curpath)
 
+Write-Output $tilessize
+
 }
 
 make_track -Track "t1"

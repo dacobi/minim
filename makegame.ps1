@@ -7,7 +7,10 @@ param([String]$Track)
 $folder = $tracks + "\" + $track
 $tracknum = $track[-1]
 
-Copy-Item -Path $folder+"\tiles.bin" -Destination "DAT\TLST"+$tracknum
+$curpath = "DAT\TLST" + $tracknum
+$curfile = $folder + "\tiles.bin"
+
+Copy-Item -Path $curfile -Destination $curpath
 
 }
 

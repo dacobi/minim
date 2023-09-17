@@ -57,7 +57,9 @@ $curfile = "tools\gameaddr.exe"
 
 Invoke-Expression "$curfile $global:tilessize"
 
-$curfile = "tools\game.bin"
+$curfile = "game.bin"
 $curpath = "DAT\GAME"
 
 Copy-Item -Path $curfile -Destination $curpath
+
+Remove-Item -Path $curfile

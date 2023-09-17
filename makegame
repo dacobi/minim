@@ -31,4 +31,5 @@ done
 
 ./tools/gameaddr $TILESSIZE
 
-cp ./tools/game.bin DAT/GAME
+cp game.bin DAT/GAME
+rm game.bin

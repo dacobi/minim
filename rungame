@@ -1,0 +1,1 @@
+./x16emu -joy1 -joy2 -prg MINIM.PRG -run

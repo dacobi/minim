@@ -47,13 +47,31 @@ int main(int argc, char* argv[]){
 		std::stringstream conwc(ntmp2); 
 
 		int wordc = 0;
+		
+		bool bError = false;
+		
+		std::string cCom;
 
 		while(conwc >> ntmp1){
-			wordc++;			
+			wordc++;
+			if(wordc == 4){
+				cCom = ntmp1;
+			}			
 		}       	
     		
-		if((wordc < 3) || (wordc > 5)){
-			std::cout << "Error in file: \"" <<  mWayPath << "\"" << std::endl;		
+    		if(wordc < 3){
+    		
+    			bError = true;
+    			
+    		} else if(wordc > 3){
+    		
+    			if(cCom.at(0) != '#'){
+    				bError = true;
+    			}
+    		}
+    		
+		if(bError){
+			std::cout << "Error in file: \"" <<  mWayPath << "\"\n" << "At line: " << (int)mWayNum << std::endl;		
 			return 1;
 		}
 

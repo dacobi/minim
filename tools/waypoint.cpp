@@ -25,8 +25,6 @@ int main(int argc, char* argv[]){
 	std::vector<mWaypoint> mWaypoints;
 	unsigned char mWayNum = 0;
 	
-
-
 	std::string nline;
     	std::string ntmp1;    
 	std::string ntmp2;

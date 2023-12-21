@@ -813,7 +813,7 @@ void reset_controls();
 
 void clear_controls();
 
-unsigned char getatan(long x);
+unsigned char getatan(unsigned int x);
 
 int getangle(int x, int y);
 

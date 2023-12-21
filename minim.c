@@ -485,7 +485,7 @@ void clear_controls(){
    }
 }
 
-unsigned char getatan(long x){
+unsigned char getatan(unsigned int x){
 
 	unsigned char retval; 
 
@@ -523,46 +523,114 @@ unsigned char getatan(long x){
 
 int getangle(int x, int y) {
 
-    int ret;
-    long mx,my,myoverx,index;
+    //int ret;
+    unsigned int mx,my,index;
 
    if((x == 0) && (y == 0)) return 0;
 
     if (x == 0) // special cases
         return (y > 0)? 0 : 180;
     else if (y == 0) // special cases
-        return (x >= 0)? 90
-            : 270;
+        return (x >= 0)? 90 : 270;
                        
-    mx = x;
-    my = y;                 
-                           
-    if((x > 0) && (y > 0)){ 
-    	myoverx = (my*100)/mx; // y*100)/x
-    	index = myoverx;
-    	ret = 90 - (int)getatan(index);
-    } // First
+//    mx = x;
+//    my = y;       
+
+  if(x < 0){
+  	mx = -x;
+  } else {
+  	mx = x;
+  }
+  
+  if(y < 0){
+  	my = -y;
+  } else {
+  	my = y;
+  }
+
+  if(my > 650){
+  	while(((my > 650) && (mx > 1))){
+		my = my >> 1;
+  		mx = mx >> 1;
+  	}	  
+  }
+  
+  if(my > 650){
+	index = 12000;
+  } else {
+	index = (my * 100) / mx;	
+  }
+              
+  if((x > 0)){//
+  
+  	if((y > 0)){ 
+    	//myoverx = (my*100)/mx; // y*100)/x
+    	
+    	/*
+    	if(myoverx > 11500){
+		index = 12000;    	
+    	} else {
+    		index = myoverx;
+    	}
+    	*/
+    	  	
+    	//ret =
+    	return 90 - (int)getatan(index);
+    	 // First
+  } else {
     
-    if((x > 0) && (y < 0)){ 
+//  if((x > 0) && (y < 0)){ 
+  	/*	
       	myoverx = (-my*100)/mx; // (-y*100)/x)
-    	index = myoverx;
-    	ret = 90 + (int)getatan(index);
-    } // Second
+    	//index = myoverx;
+    	
+    	if(myoverx > 11500){
+		index = 12000;    	
+    	} else {
+    		index = myoverx;
+    	}
+    	*/
+    	
+    	//ret = 
+    	return 90 + (int)getatan(index);
+  } // Second
+ }   
     
-    if((x < 0) && (y < 0)){ 
+  if((y < 0)){ //(x < 0) &&
+	
+	/*
       	myoverx = (-my*100)/-mx; // -y*100)/-x)
-    	index = myoverx;
-    	ret = 180 + (90 - (int)getatan(index));
-    } // Third
-    
-    if((x < 0) && (y > 0)){ 
+    	//index = myoverx;
+    	
+    	if(myoverx > 11500){
+		index = 12000;    	
+    	} else {
+    		index = myoverx;
+    	}
+	*/	
+	
+    	//ret =
+    	return 180 + (90 - (int)getatan(index));
+    	// Third
+  } else { 
+  //if((x < 0) && (y > 0))
+	/*
        	myoverx = (my*100)/-mx; // (y*100)/-x)
-    	index = myoverx;
-    	ret = 270 + (int)getatan(index);
-    } // Forth
+    	//index = myoverx;
+    	
+    	if(myoverx > 11500){
+		index = 12000;    	
+    	} else {
+    		index = myoverx;
+    	}
+        */	
+	    	    
+    	//ret =
+    	return 270 + (int)getatan(index);
+  } // Forth
 
 
-    return ret;
+  return 0;
 }
 
 void set_player(int pi, struct Player *cPlayer, struct Control *cControl, struct Vec2 *sPos, int isJoy, int isBot){

@@ -487,11 +487,9 @@ void clear_controls(){
 
 unsigned char getatan(unsigned int x){
 
-	unsigned char retval; 
-
 	if(x < 1000){
-		retval = atantab[x];
-	} else {
+		return atantab[x];
+	} 
 	
 	if(x < 1100) return 84;
 	if((x >= 1100) && (x < 1300)) return 85;
@@ -515,16 +513,13 @@ unsigned char getatan(unsigned int x){
 	89.0122 : 58 - 88.9949 : 57
 	89.5018 : 115 - 89.4974 : 114
 	*/
-	
-	}
-	
-	return retval;	
+			
+	return 0;	
 }
 
 int getangle(int x, int y) {
 
-    //int ret;
-    unsigned int mx,my,index;
+   unsigned int mx,my,index;
 
    if((x == 0) && (y == 0)) return 0;
 
@@ -533,9 +528,6 @@ int getangle(int x, int y) {
     else if (y == 0) // special cases
         return (x >= 0)? 90 : 270;
                        
-//    mx = x;
-//    my = y;       
-
   if(x < 0){
   	mx = -x;
   } else {
@@ -561,74 +553,19 @@ int getangle(int x, int y) {
 	index = (my * 100) / mx;	
   }
               
-  if((x > 0)){//
-  
-  	if((y > 0)){ 
-    	//myoverx = (my*100)/mx; // y*100)/x
-    	
-    	/*
-    	if(myoverx > 11500){
-		index = 12000;    	
-    	} else {
-    		index = myoverx;
-    	}
-    	*/
-    	  	
-    	//ret =
-    	return 90 - (int)getatan(index);
-    	 // First
-  } else {
+  if(x > 0){
+  	if(y > 0){ 
+    		return 90 - (int)getatan(index); // First	
+	} else {
+	   	return 90 + (int)getatan(index); // Second	   	
+	} 		
+  }   
     
-//  if((x > 0) && (y < 0)){ 
-  	/*	
-      	myoverx = (-my*100)/mx; // (-y*100)/x)
-    	//index = myoverx;
-    	
-    	if(myoverx > 11500){
-		index = 12000;    	
-    	} else {
-    		index = myoverx;
-    	}
-    	*/
-    	
-    	//ret = 
-    	return 90 + (int)getatan(index);
-  } // Second
- }   
-    
-  if((y < 0)){ //(x < 0) &&
-	
-	/*
-      	myoverx = (-my*100)/-mx; // -y*100)/-x)
-    	//index = myoverx;
-    	
-    	if(myoverx > 11500){
-		index = 12000;    	
-    	} else {
-    		index = myoverx;
-    	}
-	*/	
-	
-    	//ret =
-    	return 180 + (90 - (int)getatan(index));
-    	// Third
+  if(y < 0){ 
+    	return 180 + (90 - (int)getatan(index)); // Third
   } else { 
-  //if((x < 0) && (y > 0))
-	/*
-       	myoverx = (my*100)/-mx; // (y*100)/-x)
-    	//index = myoverx;
-    	
-    	if(myoverx > 11500){
-		index = 12000;    	
-    	} else {
-    		index = myoverx;
-    	}
-        */	
-	    	    
-    	//ret =
-    	return 270 + (int)getatan(index);
-  } // Forth
-
+    	return 270 + (int)getatan(index); // Forth
+  }
 
   return 0;
 }
